@@ -30,6 +30,14 @@ The inventory model is:
 - Three roomstay units
 - One whole-house booking mode
 
+Each roomstay unit is a distinct private room with its own real inventory details:
+
+- Roomstay Room 1: 1 bedroom, 1 bathroom
+- Roomstay Room 2: 1 bedroom, 1 bathroom
+- Roomstay Room 3: 1 bedroom, 1 bathroom
+
+Each roomstay room can have a different nightly price.
+
 This means the system should not present itself as a multi-property listing platform. The code may remain extensible, but the initial content, routes, seeded data, and admin tools should reflect one property with fixed inventory.
 
 ## User Types
@@ -39,7 +47,7 @@ The application supports two roles:
 - Admin
 - Customer
 
-Customers can browse, check availability, submit booking requests, review their bookings, and cancel pending requests.
+Customers can browse, check availability, register, sign in, submit booking requests from their account, review their bookings, and cancel pending requests.
 
 Admins can review bookings, update statuses, inspect availability, manage property content, and view booking metrics.
 
@@ -117,6 +125,10 @@ Additional public pages:
 - Availability calendar page
 - Booking request page
 
+The roomstay detail experience should live on one public page, not three separate public pages. That page should list all three roomstay rooms and show each room's name, `1 bedroom`, `1 bathroom`, guest capacity, and its own nightly price.
+
+The booking route is part of the product flow, but guests must register and sign in before they can use the booking form. Public users may browse stays and availability first, then authenticate when they are ready to book.
+
 ### Customer Pages
 
 Customer dashboard:
@@ -184,6 +196,12 @@ Used for the three individual roomstay units.
 - `price_per_night`
 - `is_active`
 - `created_at`
+
+For this project, each `rooms` row represents one real roomstay unit and should be seeded accordingly. The expected starting room inventory is:
+
+- Roomstay Room 1: `bedrooms = 1`, `bathrooms = 1`, room-specific `price_per_night`
+- Roomstay Room 2: `bedrooms = 1`, `bathrooms = 1`, room-specific `price_per_night`
+- Roomstay Room 3: `bedrooms = 1`, `bathrooms = 1`, room-specific `price_per_night`
 
 ### bookings
 
@@ -267,6 +285,8 @@ It can overlap with:
 
 If all three roomstay rooms are blocked for a date range, the roomstay offering should appear fully unavailable in public availability views.
 
+Because roomstay inventory is truly room-based, the public product should always make the room distinction visible rather than treating roomstay as one generic pooled option. This includes room-specific naming and room-specific pricing.
+
 ## Availability Logic Service
 
 A dedicated availability service should be implemented and reused across the application.
@@ -297,12 +317,13 @@ This avoids drift between what the calendar shows and what the booking form allo
 
 1. User selects date range
 2. User selects booking type
-3. User completes booking form
-4. Availability is rechecked on submit
-5. Booking is created with status `pending`
-6. User sees confirmation with WhatsApp payment prompt
-7. Admin reviews the request and updates status
-8. Public and admin availability views reflect the updated status
+3. If the user is not authenticated, they must register or sign in before continuing
+4. Authenticated user completes booking form
+5. Availability is rechecked on submit
+6. Booking is created with status `pending`
+7. User sees confirmation with WhatsApp payment prompt
+8. Admin reviews the request and updates status
+9. Public and admin availability views reflect the updated status
 
 Booking form fields:
 
@@ -316,6 +337,8 @@ Booking form fields:
 - Special request
 
 For roomstay, the selected room must be captured through `room_id`.
+
+When the user selects roomstay, the booking flow should clearly present the three available room options with their own nightly prices so the guest knows exactly which room they are requesting.
 
 ## Payment Handling
 
@@ -342,8 +365,17 @@ Role handling:
 Protected route behavior:
 
 - Public pages remain open
+- Availability browsing remains public
+- Booking creation requires authentication first
 - Customer dashboard requires authentication
 - Admin routes require authentication plus `admin` role
+
+Booking protection behavior:
+
+- Anonymous users can view marketing pages and availability details
+- Anonymous users cannot use a live booking form
+- Anonymous users who try to begin booking should be redirected or routed into login/register first
+- After successful authentication, the user should return to the booking flow
 
 The project should use reusable guard and session utilities rather than embedding role checks inside pages repeatedly.
 

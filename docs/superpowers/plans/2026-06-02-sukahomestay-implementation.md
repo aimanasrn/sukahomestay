@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a single-property homestay booking platform scaffold with a polished orange-led landing page, Supabase-ready schema, and tested availability logic.
+**Goal:** Build a single-property homestay booking platform scaffold with a polished orange-led landing page, Supabase-ready schema, room-specific roomstay pricing, and tested availability logic.
 
-**Architecture:** Use a single Next.js App Router application with route groups for marketing, customer, and admin areas. Keep booking rules in a reusable server-side availability service that powers public availability checks, booking validation, and admin status updates. Drive visual consistency through shared design tokens and reusable UI primitives.
+**Architecture:** Use a single Next.js App Router application with route groups for marketing, customer, and admin areas. Keep booking rules in a reusable server-side availability service that powers public availability checks, booking validation, and admin status updates. Model roomstay inventory as three concrete room records so each room carries its own `1 bedroom / 1 bathroom` details and nightly price. Drive visual consistency through shared design tokens and reusable UI primitives.
 
 **Tech Stack:** Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Vitest, Testing Library, Supabase Auth, Supabase PostgreSQL
 
@@ -87,6 +87,16 @@
 - Create: `vitest.setup.ts`
 - Create: `lib/availability/availability.test.ts`
 - Create: `lib/booking/whatsapp.test.ts`
+
+## Planning Note
+
+Roomstay should be presented as one public roomstay page backed by three individual room records:
+
+- Roomstay Room 1
+- Roomstay Room 2
+- Roomstay Room 3
+
+Each room should be seeded with `bedrooms = 1`, `bathrooms = 1`, and its own `price_per_night`.
 
 ## Task 1: Scaffold The Next.js Foundation
 
@@ -432,6 +442,22 @@ create table if not exists availability_rules (
   status text not null,
   created_at timestamptz not null default now()
 );
+```
+
+`supabase/seed.sql`
+
+```sql
+insert into properties (id, name, type, description, bedrooms, bathrooms, max_guests, price_per_night)
+values
+  ('00000000-0000-0000-0000-000000000101', 'Sukahomestay', 'homestay', 'Four-bedroom family homestay offering a full-house shared stay.', 4, 3, 10, 280.00),
+  ('00000000-0000-0000-0000-000000000102', 'Roomstay Collection', 'roomstay', 'Three private roomstay units with attached bathrooms.', 3, 3, 6, 160.00),
+  ('00000000-0000-0000-0000-000000000103', 'Whole House Takeover', 'whole_house', 'Seven-bedroom private booking that combines the house and room inventory.', 7, 5, 16, 520.00);
+
+insert into rooms (property_id, name, bedrooms, bathrooms, max_guests, price_per_night)
+values
+  ('00000000-0000-0000-0000-000000000102', 'Roomstay Room 1', 1, 1, 2, 120.00),
+  ('00000000-0000-0000-0000-000000000102', 'Roomstay Room 2', 1, 1, 2, 140.00),
+  ('00000000-0000-0000-0000-000000000102', 'Roomstay Room 3', 1, 1, 3, 160.00);
 ```
 
 - [ ] **Step 4: Run test to verify type imports now compile**
@@ -903,6 +929,8 @@ Run: `npm run build`
 Expected: FAIL with a missing module error for `booking-receipt`.
 
 - [ ] **Step 3: Write the minimal booking and property pages**
+
+The roomstay page in this task should be one public page with three room cards, and each card should show that room's own nightly price.
 
 `components/booking/booking-form.tsx`
 
