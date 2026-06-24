@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum BookingType {
+  homestay
+  roomstay
+  whole_house
+}
+
+enum BookingStatus {
+  pending
+  booked
+  cancelled
+  rejected
+}
+
+enum UserRole {
+  customer
+  admin
+}
+
+model User {
+  id        String    @id @default(cuid())
+  fullName  String
+  email     String    @unique
+  phone     String?
+  passwordHash String    @default("")
+  role      UserRole  @default(customer)
+  bookings  Booking[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Property {
+  id            String      @id @default(cuid())
+  name          String
+  type          BookingType
+  description   String
+  bedrooms      Int
+  bathrooms     Int
+  maxGuests     Int
+  pricePerNight Decimal     @db.Decimal(10, 2)
+  imageUrl      String?
+  isActive      Boolean     @default(true)
+  rooms         Room[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Room {
+  id            String    @id @default(cuid())
+  propertyId    String
+  property      Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  name          String
+  bedrooms      Int
+  bathrooms     Int
+  maxGuests     Int
+  pricePerNight Decimal   @db.Decimal(10, 2)
+  isActive      Boolean   @default(true)
+  bookings      Booking[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Booking {
+  id             String        @id @default(cuid())
+  userId         String?
+  user           User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  bookingType    BookingType
+  roomId         String?
+  room           Room?         @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  checkInDate    DateTime
+  checkOutDate   DateTime
+  guestCount     Int
+  fullName       String
+  phone          String
+  email          String
+  specialRequest String?
+  status         BookingStatus @default(pending)
+  adminNote      String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model AvailabilityRule {
+  id          String      @id @default(cuid())
+  date        DateTime
+  bookingType BookingType
+  roomId      String?
+  status      String
+  createdAt   DateTime    @default(now())
+}

@@ -1,0 +1,22 @@
+
+> dev
+> node --watch src/server.js
+
+Server listening on 4000
+Failed running 'src/server.js'. Waiting for file changes before restarting...
+Restarting 'src/server.js'
+Server listening on 4000
+Restarting 'src/server.js'
+Server listening on 4000
+Restarting 'src/server.js'
+Server listening on 4000
+Restarting 'src/server.js'
+Server listening on 4000
+Restarting 'src/server.js'
+Server listening on 4000
+Restarting 'src/server.js'
+Server listening on 4000
+Restarting 'src/server.js'
+Server listening on 4000
+Restarting 'src/server.js'
+Server listening on 4000

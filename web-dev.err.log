@@ -1,0 +1,313 @@
+[2m9:16:33 pm[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: C:\Users\ASUS\Documents\GitHub\sukahomestay\web\src\components\sukahomestay\HeroSection.jsx: Expected corresponding JSX closing tag for <div>. (49:10)
+
+[0m [90m 47 |[39m               experience[33m.[39m
+ [90m 48 |[39m             [33m<[39m[33m/[39m[33mp[39m[33m>[39m
+[31m[1m>[22m[39m[90m 49 |[39m           [33m<[39m[33m/[39m[33mp[39m[33m>[39m
+ [90m    |[39m           [31m[1m^[22m[39m
+ [90m 50 |[39m         [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m 51 |[39m       [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m 52 |[39m     [33m<[39m[33m/[39m[33msection[39m[33m>[39m[0m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/ASUS/Documents/GitHub/sukahomestay/web/src/components/sukahomestay/HeroSection.jsx[39m:49:10
+[33m  47 |                experience.
+  48 |              </p>
+  49 |            </p>
+     |            ^
+  50 |          </div>
+  51 |        </div>[39m
+[2m9:16:33 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\ASUS\Documents\GitHub\sukahomestay\web\src\components\sukahomestay\HeroSection.jsx: Expected corresponding JSX closing tag for <div>. (49:10)
+
+[0m [90m 47 |[31m               experience[33m.[31m
+ [90m 48 |[31m             [33m<[31m[33m/[31m[33mp[31m[33m>[31m
+[31m[1m>[22m[31m[90m 49 |[31m           [33m<[31m[33m/[31m[33mp[31m[33m>[31m
+ [90m    |[31m           [31m[1m^[22m[31m
+ [90m 50 |[31m         [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 51 |[31m       [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 52 |[31m     [33m<[31m[33m/[31m[33msection[31m[33m>[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/ASUS/Documents/GitHub/sukahomestay/web/src/components/sukahomestay/HeroSection.jsx[39m:49:10
+[33m  47 |                experience.
+  48 |              </p>
+  49 |            </p>
+     |            ^
+  50 |          </div>
+  51 |        </div>[39m
+      at constructor (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:6616:19)
+      at JSXParserMixin.jsxParseElementAt (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4739:16)
+      at JSXParserMixin.jsxParseElementAt (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4710:32)
+      at JSXParserMixin.jsxParseElementAt (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4710:32)
+      at JSXParserMixin.jsxParseElementAt (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4710:32)
+      at JSXParserMixin.jsxParseElement (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4761:17)
+      at JSXParserMixin.parseExprAtom (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4771:19)
+      at JSXParserMixin.parseExprSubscripts (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11098:23)
+      at JSXParserMixin.parseUpdate (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOps (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10921:23)
+      at JSXParserMixin.parseMaybeConditional (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10817:39
+      at JSXParserMixin.allowInAnd (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12443:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10817:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12510:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11692:28)
+      at JSXParserMixin.parseExprAtom (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11348:23)
+      at JSXParserMixin.parseExprAtom (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4776:20)
+      at JSXParserMixin.parseExprSubscripts (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11098:23)
+      at JSXParserMixin.parseUpdate (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOps (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10921:23)
+      at JSXParserMixin.parseMaybeConditional (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10848:21)
+      at JSXParserMixin.parseExpressionBase (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10801:23)
+      at C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10797:39
+      at JSXParserMixin.allowInAnd (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12438:16)
+      at JSXParserMixin.parseExpression (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10797:17)
+      at JSXParserMixin.parseReturnStatement (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:13159:28)
+      at JSXParserMixin.parseStatementContent (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12815:21)
+      at JSXParserMixin.parseStatementLike (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12784:17)
+      at JSXParserMixin.parseStatementListItem (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12764:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:13333:61)
+      at JSXParserMixin.parseBlockBody (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:13326:10)
+      at JSXParserMixin.parseBlock (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:13314:10)
+      at JSXParserMixin.parseFunctionBody (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12117:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12103:10)
+      at C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:13462:12
+      at JSXParserMixin.withSmartMixTopicForbiddingContext (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12420:14)
+      at JSXParserMixin.parseFunction (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:13461:10)
+      at JSXParserMixin.parseExportDefaultExpression (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:13924:19)
+      at JSXParserMixin.parseExport (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:13845:25)
+      at JSXParserMixin.parseStatementContent (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12895:27)
+      at JSXParserMixin.parseStatementLike (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12784:17)
+      at JSXParserMixin.parseModuleItem (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12761:17)
+[2m9:16:38 pm[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: C:\Users\ASUS\Documents\GitHub\sukahomestay\web\src\components\sukahomestay\HeroSection.jsx: Expected corresponding JSX closing tag for <div>. (49:10)
+
+[0m [90m 47 |[39m               experience[33m.[39m
+ [90m 48 |[39m             [33m<[39m[33m/[39m[33mp[39m[33m>[39m
+[31m[1m>[22m[39m[90m 49 |[39m           [33m<[39m[33m/[39m[33mp[39m[33m>[39m
+ [90m    |[39m           [31m[1m^[22m[39m
+ [90m 50 |[39m         [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m 51 |[39m       [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m 52 |[39m     [33m<[39m[33m/[39m[33msection[39m[33m>[39m[0m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/ASUS/Documents/GitHub/sukahomestay/web/src/components/sukahomestay/HeroSection.jsx[39m:49:10
+[33m  47 |                experience.
+  48 |              </p>
+  49 |            </p>
+     |            ^
+  50 |          </div>
+  51 |        </div>[39m
+[2m9:16:39 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\ASUS\Documents\GitHub\sukahomestay\web\src\components\sukahomestay\HeroSection.jsx: Expected corresponding JSX closing tag for <div>. (49:10)
+
+[0m [90m 47 |[31m               experience[33m.[31m
+ [90m 48 |[31m             [33m<[31m[33m/[31m[33mp[31m[33m>[31m
+[31m[1m>[22m[31m[90m 49 |[31m           [33m<[31m[33m/[31m[33mp[31m[33m>[31m
+ [90m    |[31m           [31m[1m^[22m[31m
+ [90m 50 |[31m         [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 51 |[31m       [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 52 |[31m     [33m<[31m[33m/[31m[33msection[31m[33m>[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/ASUS/Documents/GitHub/sukahomestay/web/src/components/sukahomestay/HeroSection.jsx[39m:49:10
+[33m  47 |                experience.
+  48 |              </p>
+  49 |            </p>
+     |            ^
+  50 |          </div>
+  51 |        </div>[39m
+      at constructor (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:6616:19)
+      at JSXParserMixin.jsxParseElementAt (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4739:16)
+      at JSXParserMixin.jsxParseElementAt (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4710:32)
+      at JSXParserMixin.jsxParseElementAt (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4710:32)
+      at JSXParserMixin.jsxParseElementAt (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4710:32)
+      at JSXParserMixin.jsxParseElement (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4761:17)
+      at JSXParserMixin.parseExprAtom (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4771:19)
+      at JSXParserMixin.parseExprSubscripts (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11098:23)
+      at JSXParserMixin.parseUpdate (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOps (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10921:23)
+      at JSXParserMixin.parseMaybeConditional (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10817:39
+      at JSXParserMixin.allowInAnd (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12443:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10817:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12510:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11692:28)
+      at JSXParserMixin.parseExprAtom (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11348:23)
+      at JSXParserMixin.parseExprAtom (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4776:20)
+      at JSXParserMixin.parseExprSubscripts (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11098:23)
+      at JSXParserMixin.parseUpdate (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOps (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10921:23)
+      at JSXParserMixin.parseMaybeConditional (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10848:21)
+      at JSXParserMixin.parseExpressionBase (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10801:23)
+      at C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10797:39
+      at JSXParserMixin.allowInAnd (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12438:16)
+      at JSXParserMixin.parseExpression (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10797:17)
+      at JSXParserMixin.parseReturnStatement (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:13159:28)
+      at JSXParserMixin.parseStatementContent (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12815:21)
+      at JSXParserMixin.parseStatementLike (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12784:17)
+      at JSXParserMixin.parseStatementListItem (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12764:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:13333:61)
+      at JSXParserMixin.parseBlockBody (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:13326:10)
+      at JSXParserMixin.parseBlock (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:13314:10)
+      at JSXParserMixin.parseFunctionBody (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12117:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12103:10)
+      at C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:13462:12
+      at JSXParserMixin.withSmartMixTopicForbiddingContext (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12420:14)
+      at JSXParserMixin.parseFunction (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:13461:10)
+      at JSXParserMixin.parseExportDefaultExpression (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:13924:19)
+      at JSXParserMixin.parseExport (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:13845:25)
+      at JSXParserMixin.parseStatementContent (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12895:27)
+      at JSXParserMixin.parseStatementLike (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12784:17)
+      at JSXParserMixin.parseModuleItem (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12761:17)
+[2m12:13:19 am[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\ASUS\Documents\GitHub\sukahomestay\web\src\components\sukahomestay\PropertyHighlightSection.jsx: Unexpected token (90:13)
+
+[0m [90m 88 |[31m   )[33m;[31m
+ [90m 89 |[31m }
+[31m[1m>[22m[31m[90m 90 |[31m             [33m<[31m[33m/[31m[33mp[31m[33m>[31m
+ [90m    |[31m              [31m[1m^[22m[31m
+ [90m 91 |[31m             [33m<[31m[33mp[31m className[33m=[31m[32m"mt-6 font-serif text-3xl leading-tight text-[#2f2c26]"[31m[33m>[31m
+ [90m 92 |[31m               {card[33m.[31mprice}
+ [90m 93 |[31m             [33m<[31m[33m/[31m[33mp[31m[33m>[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/ASUS/Documents/GitHub/sukahomestay/web/src/components/sukahomestay/PropertyHighlightSection.jsx[39m:90:13
+[33m  88 |    );
+  89 |  }
+  90 |              </p>
+     |               ^
+  91 |              <p className="mt-6 font-serif text-3xl leading-tight text-[#2f2c26]">
+  92 |                {card.price}[39m
+      at constructor (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:6616:19)
+      at JSXParserMixin.unexpected (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:6636:16)
+      at JSXParserMixin.jsxParseIdentifier (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4581:12)
+      at JSXParserMixin.jsxParseNamespacedName (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4588:23)
+      at JSXParserMixin.jsxParseElementName (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4597:21)
+      at JSXParserMixin.jsxParseOpeningElementAt (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4673:22)
+      at JSXParserMixin.jsxParseElementAt (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4698:33)
+      at JSXParserMixin.jsxParseElement (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4761:17)
+      at JSXParserMixin.parseExprAtom (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4774:19)
+      at JSXParserMixin.parseExprSubscripts (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11098:23)
+      at JSXParserMixin.parseUpdate (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOps (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10921:23)
+      at JSXParserMixin.parseMaybeConditional (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10848:21)
+      at JSXParserMixin.parseExpressionBase (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10801:23)
+      at C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10797:39
+      at JSXParserMixin.allowInAnd (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12438:16)
+      at JSXParserMixin.parseExpression (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10797:17)
+      at JSXParserMixin.parseStatementContent (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12912:23)
+      at JSXParserMixin.parseStatementLike (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12784:17)
+      at JSXParserMixin.parseModuleItem (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12761:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:13333:36)
+      at JSXParserMixin.parseBlockBody (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:13326:10)
+      at JSXParserMixin.parseProgram (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12639:10)
+      at JSXParserMixin.parseTopLevel (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12629:25)
+      at JSXParserMixin.parse (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:14505:25)
+      at parse (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:14539:38)
+      at parser (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\core\lib\parser\index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\core\lib\transformation\normalize-file.js:51:37)
+      at normalizeFile.next (<anonymous>)
+      at run (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\core\lib\transformation\index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\core\lib\transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\gensync\index.js:261:32)
+      at C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\gensync\index.js:223:11)
+      at C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\gensync\index.js:189:28
+      at C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\core\lib\gensync-utils\async.js:67:7
+      at C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\gensync\index.js:113:33
+      at step (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\gensync\index.js:287:14)
+      at C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\gensync\index.js:223:11)
+[2m12:13:20 am[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: C:\Users\ASUS\Documents\GitHub\sukahomestay\web\src\components\sukahomestay\PropertyHighlightSection.jsx: Unexpected token (90:13)
+
+[0m [90m 88 |[39m   )[33m;[39m
+ [90m 89 |[39m }
+[31m[1m>[22m[39m[90m 90 |[39m             [33m<[39m[33m/[39m[33mp[39m[33m>[39m
+ [90m    |[39m              [31m[1m^[22m[39m
+ [90m 91 |[39m             [33m<[39m[33mp[39m className[33m=[39m[32m"mt-6 font-serif text-3xl leading-tight text-[#2f2c26]"[39m[33m>[39m
+ [90m 92 |[39m               {card[33m.[39mprice}
+ [90m 93 |[39m             [33m<[39m[33m/[39m[33mp[39m[33m>[39m[0m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/ASUS/Documents/GitHub/sukahomestay/web/src/components/sukahomestay/PropertyHighlightSection.jsx[39m:90:13
+[33m  88 |    );
+  89 |  }
+  90 |              </p>
+     |               ^
+  91 |              <p className="mt-6 font-serif text-3xl leading-tight text-[#2f2c26]">
+  92 |                {card.price}[39m
+[2m12:13:20 am[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\ASUS\Documents\GitHub\sukahomestay\web\src\components\sukahomestay\PropertyHighlightSection.jsx: Unexpected token (90:13)
+
+[0m [90m 88 |[31m   )[33m;[31m
+ [90m 89 |[31m }
+[31m[1m>[22m[31m[90m 90 |[31m             [33m<[31m[33m/[31m[33mp[31m[33m>[31m
+ [90m    |[31m              [31m[1m^[22m[31m
+ [90m 91 |[31m             [33m<[31m[33mp[31m className[33m=[31m[32m"mt-6 font-serif text-3xl leading-tight text-[#2f2c26]"[31m[33m>[31m
+ [90m 92 |[31m               {card[33m.[31mprice}
+ [90m 93 |[31m             [33m<[31m[33m/[31m[33mp[31m[33m>[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/ASUS/Documents/GitHub/sukahomestay/web/src/components/sukahomestay/PropertyHighlightSection.jsx[39m:90:13
+[33m  88 |    );
+  89 |  }
+  90 |              </p>
+     |               ^
+  91 |              <p className="mt-6 font-serif text-3xl leading-tight text-[#2f2c26]">
+  92 |                {card.price}[39m
+      at constructor (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:6616:19)
+      at JSXParserMixin.unexpected (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:6636:16)
+      at JSXParserMixin.jsxParseIdentifier (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4581:12)
+      at JSXParserMixin.jsxParseNamespacedName (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4588:23)
+      at JSXParserMixin.jsxParseElementName (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4597:21)
+      at JSXParserMixin.jsxParseOpeningElementAt (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4673:22)
+      at JSXParserMixin.jsxParseElementAt (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4698:33)
+      at JSXParserMixin.jsxParseElement (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4761:17)
+      at JSXParserMixin.parseExprAtom (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:4774:19)
+      at JSXParserMixin.parseExprSubscripts (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11098:23)
+      at JSXParserMixin.parseUpdate (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11083:21)
+      at JSXParserMixin.parseMaybeUnary (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:11063:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10916:61)
+      at JSXParserMixin.parseExprOps (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10921:23)
+      at JSXParserMixin.parseMaybeConditional (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10898:23)
+      at JSXParserMixin.parseMaybeAssign (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10848:21)
+      at JSXParserMixin.parseExpressionBase (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10801:23)
+      at C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10797:39
+      at JSXParserMixin.allowInAnd (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12438:16)
+      at JSXParserMixin.parseExpression (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:10797:17)
+      at JSXParserMixin.parseStatementContent (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12912:23)
+      at JSXParserMixin.parseStatementLike (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12784:17)
+      at JSXParserMixin.parseModuleItem (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12761:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:13333:36)
+      at JSXParserMixin.parseBlockBody (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:13326:10)
+      at JSXParserMixin.parseProgram (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12639:10)
+      at JSXParserMixin.parseTopLevel (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:12629:25)
+      at JSXParserMixin.parse (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:14505:25)
+      at parse (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\parser\lib\index.js:14539:38)
+      at parser (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\core\lib\parser\index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\core\lib\transformation\normalize-file.js:51:37)
+      at normalizeFile.next (<anonymous>)
+      at run (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\core\lib\transformation\index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\core\lib\transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\gensync\index.js:261:32)
+      at C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\gensync\index.js:223:11)
+      at C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\gensync\index.js:189:28
+      at C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\@babel\core\lib\gensync-utils\async.js:67:7
+      at C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\gensync\index.js:113:33
+      at step (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\gensync\index.js:287:14)
+      at C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (C:\Users\ASUS\Documents\GitHub\sukahomestay\web\node_modules\gensync\index.js:223:11)
