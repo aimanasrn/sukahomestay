@@ -1,0 +1,10 @@
+{
+  "/(public)/login/page": "app/(public)/login/page.js",
+  "/admin/[section]/page": "app/admin/[section]/page.js",
+  "/(public)/page": "app/(public)/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/dashboard/[section]/page": "app/dashboard/[section]/page.js",
+  "/(public)/availability/page": "app/(public)/availability/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/(public)/booking/page": "app/(public)/booking/page.js"
+}

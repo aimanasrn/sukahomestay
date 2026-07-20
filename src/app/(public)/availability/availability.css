@@ -1,1 +1,2 @@
 .day.selected{background:var(--orange);color:#fff;font-weight:800}.day.range-preview{background:#fff1e8;color:#bd4d00;font-weight:700}.day.locked{font-weight:800;text-decoration:none}
+.day.pending{background:#fff1e8;color:#9a3412;font-weight:800;cursor:not-allowed}.legend i.pending{background:#fff1e8;border:1px solid #fdba74}.pending-notice{margin:0 0 20px;padding:14px 16px;border:1px solid #fdba74;border-radius:10px;background:#fff7ed;color:#9a3412}

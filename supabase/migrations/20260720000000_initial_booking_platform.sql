@@ -18,7 +18,31 @@ create table public.promotions (id uuid primary key default gen_random_uuid(), c
 create table public.reviews (id uuid primary key default gen_random_uuid(), booking_id uuid unique not null references public.bookings(id), customer_id uuid not null references public.profiles(id), unit_id uuid not null references public.units(id), rating integer not null check(rating between 1 and 5), comment text, status text not null default 'pending', created_at timestamptz default now());
 create or replace function public.is_admin() returns boolean language sql stable security definer set search_path=public as $$ select exists(select 1 from public.profiles where id=(select auth.uid()) and role='admin') $$;
 revoke all on function public.is_admin() from public; grant execute on function public.is_admin() to authenticated;
-create or replace function public.is_unit_available(p_unit_id uuid,p_check_in date,p_check_out date) returns boolean language sql stable security definer set search_path=public as $$ select not exists(select 1 from public.bookings b where b.unit_id=p_unit_id and b.check_in_date<p_check_out and b.check_out_date>p_check_in and (b.booking_status in ('confirmed','checked_in','completed','payment_review') or (b.booking_status in ('pending','awaiting_payment') and b.expires_at>now())) and not exists(select 1 from public.blocked_dates d where d.unit_id=p_unit_id and d.start_date<p_check_out and d.end_date>=p_check_in) $$;
+create or replace function public.is_unit_available(p_unit_id uuid,p_check_in date,p_check_out date)
+returns boolean
+language sql
+stable
+security definer
+set search_path=public
+as $$
+  select
+    not exists (
+      select 1 from public.bookings b
+      where b.unit_id=p_unit_id
+        and b.check_in_date<p_check_out
+        and b.check_out_date>p_check_in
+        and (
+          b.booking_status in ('confirmed','checked_in','completed','payment_review')
+          or (b.booking_status in ('pending','awaiting_payment') and b.expires_at>now())
+        )
+    )
+    and not exists (
+      select 1 from public.blocked_dates d
+      where d.unit_id=p_unit_id
+        and d.start_date<p_check_out
+        and d.end_date>=p_check_in
+    );
+$$;
 revoke all on function public.is_unit_available(uuid,date,date) from public; grant execute on function public.is_unit_available(uuid,date,date) to anon,authenticated;
 alter table public.profiles enable row level security; alter table public.properties enable row level security; alter table public.units enable row level security; alter table public.unit_relations enable row level security; alter table public.unit_images enable row level security; alter table public.amenities enable row level security; alter table public.unit_amenities enable row level security; alter table public.bookings enable row level security; alter table public.payments enable row level security; alter table public.blocked_dates enable row level security; alter table public.seasonal_prices enable row level security; alter table public.promotions enable row level security; alter table public.reviews enable row level security;
 create policy "public reads active properties" on public.properties for select to anon,authenticated using(status='active');
