@@ -1,0 +1,3 @@
+import Link from "next/link";
+import { Heart, Menu } from "lucide-react";
+export function SiteHeader(){return <header className="nav"><div className="shell nav-in"><Link href="/" className="brand"><Heart size={24} fill="currentColor"/><span>SukaHomestay</span></Link><nav className="links" aria-label="Primary"><Link href="/">Home</Link><Link href="/accommodations">Accommodations</Link><Link href="/availability">Availability</Link><Link href="/gallery">Gallery</Link><Link href="/about">About Us</Link><Link href="/contact">Contact</Link></nav><div style={{display:"flex",gap:10,alignItems:"center"}}><Link href="/dashboard">My Booking</Link><Link className="button" href="/availability">Book now</Link><Menu aria-label="Open menu" className="mobile"/></div></div></header>}

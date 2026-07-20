@@ -1,0 +1,2 @@
+import Link from "next/link"; const links=["Overview","Bookings","Calendar","Accommodations","Pricing","Payments","Customers","Gallery","Amenities","Blocked dates","Promotions","Reviews","Settings"];
+export default function AdminLayout({children}:{children:React.ReactNode}){return <div className="dash"><aside className="side"><strong>Admin console</strong>{links.map(x=><Link href={x==="Overview"?"/admin":`/admin/${x.toLowerCase().replace(" ","-")}`} key={x}>{x}</Link>)}</aside><main className="main">{children}</main></div>}

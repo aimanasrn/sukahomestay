@@ -1,0 +1,2 @@
+import Link from "next/link"; const links=["Overview","Bookings","Payments","Profile","Reviews"];
+export default function DashboardLayout({children}:{children:React.ReactNode}){return <div className="dash"><aside className="side"><strong>SukaHomestay</strong>{links.map(x=><Link href={x==="Overview"?"/dashboard":`/dashboard/${x.toLowerCase()}`} key={x}>{x}</Link>)}</aside><main className="main">{children}</main></div>}

@@ -1,0 +1,1 @@
+export default async function DashboardSection({params}:{params:Promise<{section:string}>}){const {section}=await params;return <><h1>{section.replace(/^./,x=>x.toUpperCase())}</h1><div className="table"><p>This protected customer area is ready for authenticated Supabase data. Sign in to view your own records only.</p></div></>}

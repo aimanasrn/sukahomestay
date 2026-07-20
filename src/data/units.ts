@@ -1,0 +1,8 @@
+import type { Unit } from "@/types";
+export const units: Unit[] = [
+  { id:"full", slug:"full-homestay", name:"Full Homestay", type:"homestay", shortDescription:"A private, spacious stay for family time and group getaways.", bedrooms:4, bathrooms:3, maximumGuests:10, basePrice:480, image:"/images/sukahomestay-hero.png", amenities:["Private kitchen","Living area","Wi-Fi","Parking"] },
+  { id:"room-1", slug:"roomstay-1", name:"Roomstay 1", type:"roomstay", shortDescription:"A calm private room with everything needed for a comfortable rest.", bedrooms:1, bathrooms:1, maximumGuests:2, basePrice:120, image:"/images/sukahomestay-hero.png", amenities:["Air conditioning","Wi-Fi","Private bathroom"] },
+  { id:"room-2", slug:"roomstay-2", name:"Roomstay 2", type:"roomstay", shortDescription:"A flexible roomstay option for couples and small families.", bedrooms:1, bathrooms:1, maximumGuests:3, basePrice:140, image:"/images/sukahomestay-hero.png", amenities:["Air conditioning","Wi-Fi","Parking"] },
+  { id:"room-3", slug:"roomstay-3", name:"Roomstay 3", type:"roomstay", shortDescription:"A bright, welcoming room for a relaxed overnight stay.", bedrooms:1, bathrooms:1, maximumGuests:2, basePrice:120, image:"/images/sukahomestay-hero.png", amenities:["Air conditioning","Wi-Fi","Parking"] },
+  { id:"whole", slug:"whole-house", name:"Whole House", type:"whole_house", shortDescription:"Book the whole home for complete privacy and shared memories.", bedrooms:7, bathrooms:6, maximumGuests:17, basePrice:880, image:"/images/sukahomestay-hero.png", amenities:["All spaces","Kitchen","Wi-Fi","Parking"] }
+];

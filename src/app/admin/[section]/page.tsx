@@ -1,0 +1,1 @@
+export default async function AdminSection({params}:{params:Promise<{section:string}>}){const {section}=await params;return <><h1>{section.replace(/-/g," ").replace(/^./,x=>x.toUpperCase())}</h1><div className="table"><p>Manage {section.replace(/-/g," ")} securely here. This screen intentionally starts empty until real authorized data is available.</p></div></>}
