@@ -31,6 +31,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("sukahomestay-bookings");
+    }
     const close = (event: KeyboardEvent) => event.key === "Escape" && setMenuOpen(false);
     window.addEventListener("keydown", close);
     return () => window.removeEventListener("keydown", close);
