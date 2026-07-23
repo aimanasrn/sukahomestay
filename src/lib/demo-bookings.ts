@@ -1,5 +1,5 @@
 "use client";
-export type LocalBooking={id:string;name:string;phone:string;email:string;unit:string;checkIn:string;checkOut:string;guests:number;payment:"deposit"|"full";status:"awaiting_payment"|"payment_review"|"confirmed";createdAt:string};
+export type LocalBooking={id:string;name:string;phone:string;email:string;unit:string;checkIn:string;checkOut:string;guests:number;payment:"deposit"|"full";status:"awaiting_payment"|"payment_review"|"confirmed"|"cancelled";createdAt:string};
 const key="sukahomestay-bookings";
 export function readBookings():LocalBooking[]{if(typeof window==="undefined")return [];try{return JSON.parse(localStorage.getItem(key)||"[]")}catch{return []}}
 export function saveBooking(booking:LocalBooking){const all=[...readBookings(),booking];localStorage.setItem(key,JSON.stringify(all));window.dispatchEvent(new Event("sukahomestay-bookings"));}

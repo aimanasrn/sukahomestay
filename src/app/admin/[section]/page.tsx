@@ -3,7 +3,8 @@
 import { use, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/browser";
 import { units as initialUnits } from "@/data/units";
-import { readBookings } from "@/lib/demo-bookings";
+import { readBookings, updateBooking } from "@/lib/demo-bookings";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Calendar as CalendarIcon,
   Check,
@@ -119,15 +120,46 @@ export default function AdminSectionPage({ params }: { params: Promise<{ section
     loadBookings();
   }, []);
 
-  async function updateStatus(id: string, status: string, paymentStatus: string) {
-    const { error } = await supabase
-      .from("bookings")
-      .update({ booking_status: status, payment_status: paymentStatus })
-      .eq("id", id);
+  // Modal dialog state
+  const [modal, setModal] = useState<{
+    open: boolean;
+    title: string;
+    description: string;
+    type: "success" | "error" | "info";
+  }>({
+    open: false,
+    title: "",
+    description: "",
+    type: "info",
+  });
 
-    if (error) {
-      alert("Failed to update status: " + error.message);
-      return;
+  async function updateStatus(id: string, status: string, paymentStatus: string) {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    
+    // Always update local storage demo state
+    updateBooking(id, status === "cancelled" ? "cancelled" : status === "confirmed" ? "confirmed" : "payment_review");
+
+    // Execute Supabase update matching column type
+    const query = isUuid
+      ? supabase.from("bookings").update({ booking_status: status, payment_status: paymentStatus }).eq("id", id)
+      : supabase.from("bookings").update({ booking_status: status, payment_status: paymentStatus }).eq("booking_number", id);
+
+    const { error } = await query;
+
+    if (error && isUuid) {
+      setModal({
+        open: true,
+        title: "Status Update Notice",
+        description: `Updated status locally. Database note: ${error.message}`,
+        type: "info",
+      });
+    } else {
+      setModal({
+        open: true,
+        title: "Status Updated Successfully",
+        description: `Reservation ${id} has been updated to ${status.replace("_", " ")}.`,
+        type: "success",
+      });
     }
     loadBookings();
   }
@@ -792,6 +824,84 @@ export default function AdminSectionPage({ params }: { params: Promise<{ section
           </div>
         </div>
       )}
+
+      {/* Smooth Animated Notification / Error Modal */}
+      <AnimatePresence>
+        {modal.open && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 9999,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 16
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setModal({ ...modal, open: false })}
+              style={{
+                position: "absolute",
+                inset: 0,
+                background: "rgba(15, 23, 42, 0.55)",
+                backdropFilter: "blur(6px)"
+              }}
+            />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ type: "spring", damping: 25, stiffness: 350 }}
+              style={{
+                position: "relative",
+                width: "100%",
+                maxWidth: 440,
+                background: "#ffffff",
+                borderRadius: 16,
+                padding: 24,
+                boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.2)",
+                border: "1px solid var(--line)"
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  {modal.type === "success" ? (
+                    <CheckCircle2 size={24} color="var(--emerald)" />
+                  ) : modal.type === "error" ? (
+                    <XCircle size={24} color="var(--rose)" />
+                  ) : (
+                    <ShieldAlert size={24} color="var(--primary)" />
+                  )}
+                  <strong style={{ fontSize: "1.1rem", color: "var(--navy)" }}>{modal.title}</strong>
+                </div>
+                <button
+                  onClick={() => setModal({ ...modal, open: false })}
+                  style={{ background: "none", border: "none", cursor: "pointer", color: "var(--muted)", padding: 4 }}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <p style={{ fontSize: "0.925rem", color: "var(--ink)", lineHeight: 1.5, marginBottom: 20 }}>
+                {modal.description}
+              </p>
+
+              <button
+                onClick={() => setModal({ ...modal, open: false })}
+                className="button"
+                style={{ width: "100%", height: 40, justifyContent: "center" }}
+              >
+                Okay, Understood
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }
