@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Heart, Menu, X, User, LogOut, ShieldAlert, Calendar, Globe } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/browser";
 import { useLanguage } from "@/context/language-context";
 
@@ -143,79 +144,115 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {/* Mobile Drawer Dropdown */}
-      {mobileMenuOpen && (
-        <div className="mobile-drawer">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-            <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--muted)", textTransform: "uppercase" }}>Menu</span>
-            <button
-              onClick={toggleLanguage}
-              className="button secondary"
-              style={{ height: 34, padding: "0 12px", fontSize: "0.825rem", gap: 6 }}
-            >
-              <Globe size={14} color="var(--primary)" />
-              <span>{language === "en" ? "Bahasa Melayu (BM)" : "English (EN)"}</span>
-            </button>
-          </div>
-
-          <nav style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`mobile-nav-link ${pathname === link.href ? "active" : ""}`}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-
-          <div style={{ borderTop: "1px solid var(--line)", paddingTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
-            <Link
-              href="/availability"
-              className="button"
+      {/* Mobile Drawer Dropdown & Backdrop */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            {/* Backdrop overlay */}
+            <motion.div
+              key="mobile-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
               onClick={() => setMobileMenuOpen(false)}
-              style={{ width: "100%", justifyContent: "center" }}
-            >
-              <Calendar size={18} />
-              <span>{t("nav_book_now")}</span>
-            </Link>
+              style={{
+                position: "fixed",
+                inset: 0,
+                top: 76,
+                background: "rgba(15, 23, 42, 0.4)",
+                backdropFilter: "blur(4px)",
+                WebkitBackdropFilter: "blur(4px)",
+                zIndex: 90,
+              }}
+            />
 
-            {signedIn ? (
-              <>
-                <Link
-                  href={admin ? "/admin" : "/dashboard"}
+            {/* Smooth Animated Drawer Container */}
+            <motion.div
+              key="mobile-drawer"
+              initial={{ opacity: 0, height: 0, y: -12 }}
+              animate={{ opacity: 1, height: "auto", y: 0 }}
+              exit={{ opacity: 0, height: 0, y: -12 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="mobile-drawer"
+              style={{
+                overflow: "hidden",
+                position: "relative",
+                zIndex: 100,
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--muted)", textTransform: "uppercase" }}>Menu</span>
+                <button
+                  onClick={toggleLanguage}
                   className="button secondary"
+                  style={{ height: 34, padding: "0 12px", fontSize: "0.825rem", gap: 6 }}
+                >
+                  <Globe size={14} color="var(--primary)" />
+                  <span>{language === "en" ? "Bahasa Melayu (BM)" : "English (EN)"}</span>
+                </button>
+              </div>
+
+              <nav style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`mobile-nav-link ${pathname === link.href ? "active" : ""}`}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+
+              <div style={{ borderTop: "1px solid var(--line)", paddingTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+                <Link
+                  href="/availability"
+                  className="button"
                   onClick={() => setMobileMenuOpen(false)}
                   style={{ width: "100%", justifyContent: "center" }}
                 >
-                  {admin ? <ShieldAlert size={18} /> : <User size={18} />}
-                  <span>{admin ? t("nav_admin") : t("nav_my_bookings")}</span>
+                  <Calendar size={18} />
+                  <span>{t("nav_book_now")}</span>
                 </Link>
-                <button
-                  onClick={signOut}
-                  className="button secondary"
-                  style={{ width: "100%", justifyContent: "center", color: "var(--rose)" }}
-                >
-                  <LogOut size={18} />
-                  <span>{t("nav_sign_out")} ({userEmail})</span>
-                </button>
-              </>
-            ) : (
-              <Link
-                href="/login"
-                className="button secondary"
-                onClick={() => setMobileMenuOpen(false)}
-                style={{ width: "100%", justifyContent: "center" }}
-              >
-                <User size={18} />
-                <span>{t("nav_login")}</span>
-              </Link>
-            )}
-          </div>
-        </div>
-      )}
+
+                {signedIn ? (
+                  <>
+                    <Link
+                      href={admin ? "/admin" : "/dashboard"}
+                      className="button secondary"
+                      onClick={() => setMobileMenuOpen(false)}
+                      style={{ width: "100%", justifyContent: "center" }}
+                    >
+                      {admin ? <ShieldAlert size={18} /> : <User size={18} />}
+                      <span>{admin ? t("nav_admin") : t("nav_my_bookings")}</span>
+                    </Link>
+                    <button
+                      onClick={signOut}
+                      className="button secondary"
+                      style={{ width: "100%", justifyContent: "center", color: "var(--rose)" }}
+                    >
+                      <LogOut size={18} />
+                      <span>{t("nav_sign_out")} ({userEmail})</span>
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="button secondary"
+                    onClick={() => setMobileMenuOpen(false)}
+                    style={{ width: "100%", justifyContent: "center" }}
+                  >
+                    <User size={18} />
+                    <span>{t("nav_login")}</span>
+                  </Link>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 }
