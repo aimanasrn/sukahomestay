@@ -195,25 +195,28 @@ function AvailabilityCalendar() {
    * Cross-customer unit availability evaluation:
    * - Whole House: Unavailable if Whole House, Full Homestay, or ANY Roomstay is booked.
    * - Full Homestay: Unavailable if Whole House, Full Homestay, or ANY Roomstay is booked.
-   * - Roomstay 1, 2, 3: Unavailable if Whole House, Full Homestay, or that exact Roomstay is booked.
+   * - Roomstay 1, 2, 3: Unavailable ONLY if Whole House or that exact Roomstay is booked.
+   *   (Booking Full Homestay leaves Roomstay 1, 2, 3 available for other guests!)
    */
   function isUnitBooked(slug: string): boolean {
-    // 1. If Whole House or Full Homestay is booked, all units are unavailable
-    if (bookedUnitSlugs.has("whole-house") || bookedUnitSlugs.has("full-homestay")) {
+    // 1. Whole House booked locks everything
+    if (bookedUnitSlugs.has("whole-house")) {
       return true;
     }
 
-    // 2. Whole House & Full Homestay are unavailable if ANY roomstay is booked
+    // 2. Whole House & Full Homestay are unavailable if Full Homestay OR ANY Roomstay is booked
+    const isFullHomestayBooked = bookedUnitSlugs.has("full-homestay");
     const anyRoomstayBooked =
       bookedUnitSlugs.has("roomstay-1") ||
       bookedUnitSlugs.has("roomstay-2") ||
       bookedUnitSlugs.has("roomstay-3");
 
     if (slug === "whole-house" || slug === "full-homestay") {
-      return anyRoomstayBooked;
+      return isFullHomestayBooked || anyRoomstayBooked;
     }
 
-    // 3. Individual roomstay is unavailable if that exact roomstay is booked
+    // 3. Individual roomstays (roomstay-1, roomstay-2, roomstay-3) remain AVAILABLE
+    // when Full Homestay is booked. They are only unavailable if booked directly!
     return bookedUnitSlugs.has(slug);
   }
 
