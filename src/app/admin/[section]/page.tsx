@@ -77,7 +77,7 @@ export default function AdminSectionPage({ params }: { params: Promise<{ section
   // Accommodations state
   const [unitList, setUnitList] = useState(initialUnits);
 
-  // Load Bookings directly from Supabase database
+  // Load Bookings strictly from Supabase database
   async function loadBookings() {
     setLoading(true);
 
@@ -85,45 +85,18 @@ export default function AdminSectionPage({ params }: { params: Promise<{ section
     const { data, error } = await supabase
       .from("bookings")
       .select(
-        "id, booking_number, check_in_date, check_out_date, booking_status, payment_status, total_amount, payment_receipt_url, profiles(full_name, phone, email), units(name, slug)"
+        "id, booking_number, check_in_date, check_out_date, booking_status, payment_status, total_amount, deposit_amount, payment_receipt_url, profiles(full_name, phone, email), units(name, slug)"
       )
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.warn("Bookings fetch warning:", error.message);
-      // Fallback to local storage if remote DB is empty
-      const local = readBookings();
-      const localFormatted: Booking[] = local.map((b) => ({
-        id: b.id,
-        booking_number: b.id,
-        check_in_date: b.checkIn,
-        check_out_date: b.checkOut,
-        booking_status: b.status === "awaiting_payment" ? "pending" : b.status,
-        payment_status: b.status === "confirmed" ? "paid" : "unpaid",
-        total_amount: b.payment === "deposit" ? 120 : 480,
-        profiles: { full_name: b.name, phone: b.phone, email: b.email },
-        units: { name: b.unit, slug: b.unit.toLowerCase().replace(/\s+/g, "-") },
-      }));
-      setBookings(localFormatted);
-    } else if (data && data.length > 0) {
-      setBookings((data || []) as unknown as Booking[]);
+      console.warn("Database fetch error:", error.message);
+      setMessage(`Supabase Database Error: ${error.message}`);
+      setBookings([]);
     } else {
-      // If DB has 0 rows, check local bookings fallback
-      const local = readBookings();
-      const localFormatted: Booking[] = local.map((b) => ({
-        id: b.id,
-        booking_number: b.id,
-        check_in_date: b.checkIn,
-        check_out_date: b.checkOut,
-        booking_status: b.status === "awaiting_payment" ? "pending" : b.status,
-        payment_status: b.status === "confirmed" ? "paid" : "unpaid",
-        total_amount: b.payment === "deposit" ? 120 : 480,
-        profiles: { full_name: b.name, phone: b.phone, email: b.email },
-        units: { name: b.unit, slug: b.unit.toLowerCase().replace(/\s+/g, "-") },
-      }));
-      setBookings(localFormatted);
+      setBookings((data || []) as unknown as Booking[]);
+      setMessage("");
     }
-    setMessage("");
     setLoading(false);
   }
 

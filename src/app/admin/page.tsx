@@ -28,19 +28,6 @@ export default function AdminOverview() {
   async function load() {
     setLoading(true);
 
-    const local = readBookings();
-    const localFormatted: Booking[] = local.map((b) => ({
-      id: b.id,
-      booking_number: b.id,
-      check_in_date: b.checkIn,
-      check_out_date: b.checkOut,
-      booking_status: b.status === "awaiting_payment" ? "pending" : b.status,
-      payment_status: b.status === "confirmed" ? "paid" : "unpaid",
-      total_amount: b.payment === "deposit" ? 120 : 480,
-      profiles: { full_name: b.name, phone: b.phone, email: b.email },
-      units: { name: b.unit },
-    }));
-
     const { data, error } = await supabase
       .from("bookings")
       .select("id, booking_number, check_in_date, check_out_date, booking_status, payment_status, total_amount, profiles(full_name, phone, email), units(name)")
@@ -48,14 +35,12 @@ export default function AdminOverview() {
 
     if (error) {
       console.warn("Supabase fetch warning:", error.message);
-      setBookings(localFormatted);
+      setMessage(`Supabase Database Error: ${error.message}`);
+      setBookings([]);
     } else {
-      const dbBookings = (data || []) as unknown as Booking[];
-      const existingNumbers = new Set(dbBookings.map((b) => b.booking_number || b.id));
-      const uniqueLocals = localFormatted.filter((b) => !existingNumbers.has(b.booking_number) && !existingNumbers.has(b.id));
-      setBookings([...dbBookings, ...uniqueLocals]);
+      setBookings((data || []) as unknown as Booking[]);
+      setMessage("");
     }
-    setMessage("");
     setLoading(false);
   }
 
