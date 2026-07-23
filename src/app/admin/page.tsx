@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/browser";
+import { readBookings } from "@/lib/demo-bookings";
 import { ShieldAlert, ArrowRight, CheckCircle2, Clock, XCircle, Calendar, DollarSign, Users } from "lucide-react";
 
 type Booking = {
@@ -26,37 +27,35 @@ export default function AdminOverview() {
 
   async function load() {
     setLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) {
-      setMessage("Please log in with an administrator account.");
-      setLoading(false);
-      return;
-    }
-
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (profile?.role !== "admin") {
-      setMessage("This account does not have administrator privileges.");
-      setLoading(false);
-      return;
-    }
+    const local = readBookings();
+    const localFormatted: Booking[] = local.map((b) => ({
+      id: b.id,
+      booking_number: b.id,
+      check_in_date: b.checkIn,
+      check_out_date: b.checkOut,
+      booking_status: b.status === "awaiting_payment" ? "pending" : b.status,
+      payment_status: b.status === "confirmed" ? "paid" : "unpaid",
+      total_amount: b.payment === "deposit" ? 120 : 480,
+      profiles: { full_name: b.name, phone: b.phone, email: b.email },
+      units: { name: b.unit },
+    }));
 
     const { data, error } = await supabase
       .from("bookings")
-      .select("id, booking_number, check_in_date, check_out_date, booking_status, payment_status, total_amount, profiles!bookings_customer_id_fkey(full_name, phone, email), units!bookings_unit_id_fkey(name)")
+      .select("id, booking_number, check_in_date, check_out_date, booking_status, payment_status, total_amount, profiles(full_name, phone, email), units(name)")
       .order("created_at", { ascending: false });
 
     if (error) {
-      setMessage(error.message);
+      console.warn("Supabase fetch warning:", error.message);
+      setBookings(localFormatted);
     } else {
-      setBookings((data || []) as unknown as Booking[]);
-      setMessage("");
+      const dbBookings = (data || []) as unknown as Booking[];
+      const existingNumbers = new Set(dbBookings.map((b) => b.booking_number || b.id));
+      const uniqueLocals = localFormatted.filter((b) => !existingNumbers.has(b.booking_number) && !existingNumbers.has(b.id));
+      setBookings([...dbBookings, ...uniqueLocals]);
     }
+    setMessage("");
     setLoading(false);
   }
 

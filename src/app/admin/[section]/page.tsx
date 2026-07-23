@@ -3,6 +3,7 @@
 import { use, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/browser";
 import { units as initialUnits } from "@/data/units";
+import { readBookings } from "@/lib/demo-bookings";
 import {
   Calendar as CalendarIcon,
   Check,
@@ -78,38 +79,39 @@ export default function AdminSectionPage({ params }: { params: Promise<{ section
   // Load Bookings
   async function loadBookings() {
     setLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) {
-      setMessage("Please log in with an administrator account.");
-      setLoading(false);
-      return;
-    }
+    // Read local bookings from localStorage fallback
+    const local = readBookings();
+    const localFormatted: Booking[] = local.map((b) => ({
+      id: b.id,
+      booking_number: b.id,
+      check_in_date: b.checkIn,
+      check_out_date: b.checkOut,
+      booking_status: b.status === "awaiting_payment" ? "pending" : b.status,
+      payment_status: b.status === "confirmed" ? "paid" : "unpaid",
+      total_amount: b.payment === "deposit" ? 120 : 480,
+      profiles: { full_name: b.name, phone: b.phone, email: b.email },
+      units: { name: b.unit, slug: b.unit.toLowerCase().replace(/\s+/g, "-") },
+    }));
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (profile?.role !== "admin") {
-      setMessage("This account does not have administrator privileges.");
-      setLoading(false);
-      return;
-    }
-
+    const supabase = createClient();
     const { data, error } = await supabase
       .from("bookings")
       .select(
-        "id, booking_number, check_in_date, check_out_date, booking_status, payment_status, total_amount, payment_receipt_url, profiles!bookings_customer_id_fkey(full_name, phone, email), units!bookings_unit_id_fkey(name, slug)"
+        "id, booking_number, check_in_date, check_out_date, booking_status, payment_status, total_amount, payment_receipt_url, profiles(full_name, phone, email), units(name, slug)"
       )
       .order("created_at", { ascending: false });
 
     if (error) {
       console.warn("Bookings fetch warning:", error.message);
+      setBookings(localFormatted);
     } else {
-      setBookings((data || []) as unknown as Booking[]);
+      const dbBookings = (data || []) as unknown as Booking[];
+      const existingNumbers = new Set(dbBookings.map((b) => b.booking_number || b.id));
+      const uniqueLocals = localFormatted.filter((b) => !existingNumbers.has(b.booking_number) && !existingNumbers.has(b.id));
+      setBookings([...dbBookings, ...uniqueLocals]);
     }
+    setMessage("");
     setLoading(false);
   }
 
