@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/browser";
-import { Check, ShieldAlert, User, Calendar, DollarSign, ExternalLink } from "lucide-react";
+import { ShieldAlert, ArrowRight, CheckCircle2, Clock, XCircle, Calendar, DollarSign, Users } from "lucide-react";
 
 type Booking = {
   id: string;
@@ -16,9 +17,9 @@ type Booking = {
   units: { name: string }[] | { name: string };
 };
 
-export default function Admin() {
+export default function AdminOverview() {
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [message, setMessage] = useState("Loading bookings...");
+  const [message, setMessage] = useState("Loading reservations queue...");
   const [loading, setLoading] = useState(true);
 
   const supabase = createClient();
@@ -63,60 +64,64 @@ export default function Admin() {
     load();
   }, []);
 
-  async function confirmBooking(id: string) {
-    const { error } = await supabase
-      .from("bookings")
-      .update({ booking_status: "confirmed", payment_status: "paid" })
-      .eq("id", id);
-
-    if (error) {
-      alert("Failed to confirm booking: " + error.message);
-      return;
-    }
-    load();
-  }
-
-  async function cancelBooking(id: string) {
-    if (!confirm("Are you sure you want to cancel this booking request?")) return;
-    const { error } = await supabase
-      .from("bookings")
-      .update({ booking_status: "cancelled", payment_status: "failed" })
-      .eq("id", id);
-
-    if (error) {
-      alert("Failed to cancel booking: " + error.message);
-      return;
-    }
-    load();
-  }
+  const totalRevenue = bookings
+    .filter((b) => b.booking_status === "confirmed")
+    .reduce((sum, b) => sum + Number(b.total_amount || 0), 0);
 
   return (
     <main className="main">
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-        <ShieldAlert size={28} color="var(--primary)" />
-        <h1 style={{ margin: 0 }}>Admin Reservation Console</h1>
-      </div>
-      <p style={{ marginBottom: 32 }}>
-        Review bank receipts submitted via WhatsApp or dashboard, confirm reservations, and automatically lock dates on the public availability calendar.
-      </p>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+        <div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+            <ShieldAlert size={26} color="var(--primary)" />
+            <h1 style={{ margin: 0, fontSize: "1.8rem" }}>Admin Dashboard Overview</h1>
+          </div>
+          <p style={{ color: "var(--muted)", margin: 0 }}>
+            Executive summary of guest reservations, current occupancy, and revenue.
+          </p>
+        </div>
 
-      <div className="stats">
+        <Link href="/admin/bookings" className="button" style={{ height: 40, padding: "0 16px", fontSize: "0.875rem" }}>
+          <span>Manage Bookings</span>
+          <ArrowRight size={16} />
+        </Link>
+      </div>
+
+      <div className="stats" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20, marginBottom: 32 }}>
         <div className="stat">
           <span>Total Requests</span>
           <strong>{bookings.length}</strong>
         </div>
         <div className="stat">
-          <span>Confirmed</span>
-          <strong>{bookings.filter((b) => b.booking_status === "confirmed").length}</strong>
+          <span>Confirmed Stays</span>
+          <strong style={{ color: "var(--emerald)" }}>
+            {bookings.filter((b) => b.booking_status === "confirmed").length}
+          </strong>
         </div>
         <div className="stat">
-          <span>Payment Review</span>
-          <strong>{bookings.filter((b) => b.booking_status === "payment_review" || b.booking_status === "pending").length}</strong>
+          <span>Pending Review</span>
+          <strong style={{ color: "var(--amber)" }}>
+            {bookings.filter((b) => b.booking_status === "payment_review" || b.booking_status === "pending").length}
+          </strong>
+        </div>
+        <div className="stat">
+          <span>Total Revenue</span>
+          <strong style={{ color: "var(--navy)" }}>
+            RM {totalRevenue.toFixed(2)}
+          </strong>
         </div>
       </div>
 
       <div className="table-card">
-        <h3>Reservation Queue</h3>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <div>
+            <h3 style={{ margin: 0 }}>Recent Reservation Queue</h3>
+            <p style={{ fontSize: "0.85rem", color: "var(--muted)", margin: 0 }}>Read-only view of recent guest reservations.</p>
+          </div>
+          <Link href="/admin/bookings" className="button secondary" style={{ height: 34, padding: "0 12px", fontSize: "0.8rem" }}>
+            Open Bookings Management →
+          </Link>
+        </div>
 
         {message ? (
           <p style={{ padding: 20, color: "var(--muted)" }}>{message}</p>
@@ -129,8 +134,7 @@ export default function Admin() {
                   <th>Guest Information</th>
                   <th>Accommodation & Stay</th>
                   <th>Total Amount</th>
-                  <th>Status</th>
-                  <th>Actions</th>
+                  <th>Reservation Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -162,31 +166,6 @@ export default function Admin() {
                         <span className={`status ${b.booking_status}`}>
                           {b.booking_status.replace("_", " ")}
                         </span>
-                      </td>
-                      <td>
-                        {b.booking_status !== "confirmed" ? (
-                          <div style={{ display: "flex", gap: 8 }}>
-                            <button
-                              className="button"
-                              onClick={() => confirmBooking(b.id)}
-                              style={{ height: 34, padding: "0 14px", fontSize: "0.825rem" }}
-                            >
-                              <Check size={14} />
-                              <span>Confirm & Lock</span>
-                            </button>
-                            <button
-                              className="button secondary"
-                              onClick={() => cancelBooking(b.id)}
-                              style={{ height: 34, padding: "0 10px", fontSize: "0.825rem", color: "var(--rose)" }}
-                            >
-                              Reject
-                            </button>
-                          </div>
-                        ) : (
-                          <span style={{ color: "var(--emerald)", fontWeight: 700, fontSize: "0.85rem" }}>
-                            ✓ Dates Locked
-                          </span>
-                        )}
                       </td>
                     </tr>
                   );
