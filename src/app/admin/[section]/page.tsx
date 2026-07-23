@@ -241,6 +241,10 @@ export default function AdminSectionPage({ params }: { params: Promise<{ section
                     filteredBookings.map((b) => {
                       const guest = Array.isArray(b.profiles) ? b.profiles[0] : b.profiles;
                       const unit = Array.isArray(b.units) ? b.units[0] : b.units;
+                      const total = Number(b.total_amount || 0);
+                      const deposit = b.booking_status === "confirmed" ? Math.min(total, total * 0.25 || 120) : 0;
+                      const isFullyPaid = b.payment_status === "paid" || b.payment_status === "fully_paid";
+                      const balanceDue = isFullyPaid ? 0 : Math.max(0, total - deposit);
 
                       return (
                         <tr key={b.id}>
@@ -261,7 +265,13 @@ export default function AdminSectionPage({ params }: { params: Promise<{ section
                             </small>
                           </td>
                           <td>
-                            <strong>RM {Number(b.total_amount).toFixed(2)}</strong>
+                            <strong>RM {total.toFixed(2)}</strong>
+                            <br />
+                            <small style={{ color: isFullyPaid ? "var(--emerald)" : "var(--amber)", fontWeight: 600 }}>
+                              {isFullyPaid
+                                ? "✓ Fully Paid"
+                                : `Deposit: RM ${deposit.toFixed(2)} | Due: RM ${balanceDue.toFixed(2)}`}
+                            </small>
                           </td>
                           <td>
                             <span className={`status ${b.booking_status}`}>
@@ -269,24 +279,36 @@ export default function AdminSectionPage({ params }: { params: Promise<{ section
                             </span>
                           </td>
                           <td>
-                            <div style={{ display: "flex", gap: 6 }}>
-                              {b.booking_status !== "confirmed" && (
-                                <button
-                                  className="button"
-                                  onClick={() => updateStatus(b.id, "confirmed", "paid")}
-                                  style={{ height: 32, padding: "0 10px", fontSize: "0.775rem" }}
-                                >
-                                  <Check size={14} /> Confirm
-                                </button>
-                              )}
-                              {b.booking_status !== "cancelled" && (
+                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                              {b.booking_status !== "confirmed" ? (
+                                <div style={{ display: "flex", gap: 6 }}>
+                                  <button
+                                    className="button"
+                                    onClick={() => updateStatus(b.id, "confirmed", "deposit_paid")}
+                                    style={{ height: 32, padding: "0 10px", fontSize: "0.775rem" }}
+                                  >
+                                    <Check size={14} /> Confirm Deposit
+                                  </button>
+                                  <button
+                                    className="button secondary"
+                                    onClick={() => updateStatus(b.id, "cancelled", "failed")}
+                                    style={{ height: 32, padding: "0 8px", fontSize: "0.775rem", color: "var(--rose)" }}
+                                  >
+                                    Reject
+                                  </button>
+                                </div>
+                              ) : !isFullyPaid ? (
                                 <button
                                   className="button secondary"
-                                  onClick={() => updateStatus(b.id, "cancelled", "failed")}
-                                  style={{ height: 32, padding: "0 8px", fontSize: "0.775rem", color: "var(--rose)" }}
+                                  onClick={() => updateStatus(b.id, "confirmed", "fully_paid")}
+                                  style={{ height: 32, padding: "0 10px", fontSize: "0.775rem", color: "var(--emerald)", borderColor: "var(--emerald-light)", background: "var(--emerald-light)" }}
                                 >
-                                  Reject
+                                  💵 Collect Balance (RM {balanceDue.toFixed(2)})
                                 </button>
+                              ) : (
+                                <span style={{ color: "var(--emerald)", fontWeight: 700, fontSize: "0.825rem" }}>
+                                  ✓ Dates Locked & Paid
+                                </span>
                               )}
                             </div>
                           </td>
