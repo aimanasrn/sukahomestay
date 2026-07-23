@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/browser";
-import { readBookings } from "@/lib/demo-bookings";
 import { ShieldAlert, ArrowRight, CheckCircle2, Clock, XCircle, Calendar, DollarSign, Users } from "lucide-react";
 
 type Booking = {

@@ -3,7 +3,6 @@
 import { use, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/browser";
 import { units as initialUnits } from "@/data/units";
-import { readBookings, updateBooking } from "@/lib/demo-bookings";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Calendar as CalendarIcon,
@@ -169,9 +168,6 @@ export default function AdminSectionPage({ params }: { params: Promise<{ section
 
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(bookingId);
     
-    // Always sync local storage demo state
-    updateBooking(bookingId, targetStatus === "cancelled" ? "cancelled" : targetStatus === "confirmed" ? "confirmed" : "payment_review");
-
     // Execute Supabase update directly to Postgres database
     const query = isUuid
       ? supabase.from("bookings").update({ booking_status: targetStatus, payment_status: targetPaymentStatus }).eq("id", bookingId)

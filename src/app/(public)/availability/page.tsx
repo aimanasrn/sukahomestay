@@ -7,7 +7,6 @@ import { useSearchParams } from "next/navigation";
 import { CalendarDays, ChevronLeft, ChevronRight, CheckCircle2, ArrowRight, BedDouble, Bath, Users, XCircle, Home } from "lucide-react";
 import { createClient } from "@/lib/supabase/browser";
 import { units } from "@/data/units";
-import { readBookings } from "@/lib/demo-bookings";
 import { useLanguage } from "@/context/language-context";
 
 const dateKey = (date: Date) =>
@@ -95,7 +94,7 @@ function AvailabilityCalendar() {
       });
   }, [month]);
 
-  // Query unit availability across Supabase RPC and local storage fallback
+  // Query unit availability across Supabase RPC and bookings table
   useEffect(() => {
     if (selected.length < 2) {
       setBookedUnitSlugs(new Set());
@@ -104,31 +103,15 @@ function AvailabilityCalendar() {
 
     const checkIn = selected[0];
     const checkOut = selected[1];
-
-    // Read local bookings fallback
-    const local = readBookings();
-    const localSlugs = new Set<string>();
-    local.forEach((b) => {
-      if (b.checkIn < checkOut && b.checkOut > checkIn) {
-        const found = units.find((u) => u.name === b.unit || u.slug === b.unit || u.id === b.unit);
-        if (found) localSlugs.add(found.slug);
-        else if (b.unit.includes("Full")) localSlugs.add("full-homestay");
-        else if (b.unit.includes("Whole")) localSlugs.add("whole-house");
-        else if (b.unit.includes("1")) localSlugs.add("roomstay-1");
-        else if (b.unit.includes("2")) localSlugs.add("roomstay-2");
-        else if (b.unit.includes("3")) localSlugs.add("roomstay-3");
-      }
-    });
-
     const supabase = createClient();
 
     supabase
       .rpc("get_booked_units_for_dates", { p_check_in: checkIn, p_check_out: checkOut })
       .then(({ data, error }) => {
-        const merged = new Set<string>(localSlugs);
+        const bookedSlugs = new Set<string>();
         if (!error && data) {
-          (data || []).forEach((row: { unit_slug: string }) => merged.add(row.unit_slug));
-          setBookedUnitSlugs(merged);
+          (data || []).forEach((row: { unit_slug: string }) => bookedSlugs.add(row.unit_slug));
+          setBookedUnitSlugs(bookedSlugs);
         } else {
           // Fallback: Query bookings table directly if RPC procedure is missing on Supabase
           supabase
@@ -137,7 +120,7 @@ function AvailabilityCalendar() {
             .lt("check_in_date", checkOut)
             .gt("check_out_date", checkIn)
             .then(({ data: directData }) => {
-              const fallbackMerged = new Set<string>(localSlugs);
+              const fallbackMerged = new Set<string>();
               if (directData) {
                 directData.forEach((b: any) => {
                   const status = b.booking_status;
