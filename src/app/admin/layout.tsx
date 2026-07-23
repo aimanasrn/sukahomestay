@@ -6,7 +6,7 @@ import "./mobile-overrides.css";
 import Link from "next/link";
 import { LogOut, Menu, X, Globe } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/browser";
 
 const links = [
@@ -27,6 +27,7 @@ const links = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -43,15 +44,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const nav = (
     <nav aria-label="Admin navigation">
-      {links.map((x) => (
-        <Link
-          onClick={() => setMenuOpen(false)}
-          href={x === "Overview" ? "/admin" : `/admin/${x.toLowerCase().replace(" ", "-")}`}
-          key={x}
-        >
-          {x}
-        </Link>
-      ))}
+      {links.map((x) => {
+        const href = x === "Overview" ? "/admin" : `/admin/${x.toLowerCase().replace(" ", "-")}`;
+        const isActive = pathname === href;
+        return (
+          <Link
+            onClick={() => setMenuOpen(false)}
+            href={href}
+            key={x}
+            className={isActive ? "active" : ""}
+          >
+            {x}
+          </Link>
+        );
+      })}
     </nav>
   );
 
