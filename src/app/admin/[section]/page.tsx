@@ -77,23 +77,9 @@ export default function AdminSectionPage({ params }: { params: Promise<{ section
   // Accommodations state
   const [unitList, setUnitList] = useState(initialUnits);
 
-  // Load Bookings
+  // Load Bookings directly from Supabase database
   async function loadBookings() {
     setLoading(true);
-
-    // Read local bookings from localStorage fallback
-    const local = readBookings();
-    const localFormatted: Booking[] = local.map((b) => ({
-      id: b.id,
-      booking_number: b.id,
-      check_in_date: b.checkIn,
-      check_out_date: b.checkOut,
-      booking_status: b.status === "awaiting_payment" ? "pending" : b.status,
-      payment_status: b.status === "confirmed" ? "paid" : "unpaid",
-      total_amount: b.payment === "deposit" ? 120 : 480,
-      profiles: { full_name: b.name, phone: b.phone, email: b.email },
-      units: { name: b.unit, slug: b.unit.toLowerCase().replace(/\s+/g, "-") },
-    }));
 
     const supabase = createClient();
     const { data, error } = await supabase
@@ -105,12 +91,37 @@ export default function AdminSectionPage({ params }: { params: Promise<{ section
 
     if (error) {
       console.warn("Bookings fetch warning:", error.message);
+      // Fallback to local storage if remote DB is empty
+      const local = readBookings();
+      const localFormatted: Booking[] = local.map((b) => ({
+        id: b.id,
+        booking_number: b.id,
+        check_in_date: b.checkIn,
+        check_out_date: b.checkOut,
+        booking_status: b.status === "awaiting_payment" ? "pending" : b.status,
+        payment_status: b.status === "confirmed" ? "paid" : "unpaid",
+        total_amount: b.payment === "deposit" ? 120 : 480,
+        profiles: { full_name: b.name, phone: b.phone, email: b.email },
+        units: { name: b.unit, slug: b.unit.toLowerCase().replace(/\s+/g, "-") },
+      }));
       setBookings(localFormatted);
+    } else if (data && data.length > 0) {
+      setBookings((data || []) as unknown as Booking[]);
     } else {
-      const dbBookings = (data || []) as unknown as Booking[];
-      const existingNumbers = new Set(dbBookings.map((b) => b.booking_number || b.id));
-      const uniqueLocals = localFormatted.filter((b) => !existingNumbers.has(b.booking_number) && !existingNumbers.has(b.id));
-      setBookings([...dbBookings, ...uniqueLocals]);
+      // If DB has 0 rows, check local bookings fallback
+      const local = readBookings();
+      const localFormatted: Booking[] = local.map((b) => ({
+        id: b.id,
+        booking_number: b.id,
+        check_in_date: b.checkIn,
+        check_out_date: b.checkOut,
+        booking_status: b.status === "awaiting_payment" ? "pending" : b.status,
+        payment_status: b.status === "confirmed" ? "paid" : "unpaid",
+        total_amount: b.payment === "deposit" ? 120 : 480,
+        profiles: { full_name: b.name, phone: b.phone, email: b.email },
+        units: { name: b.unit, slug: b.unit.toLowerCase().replace(/\s+/g, "-") },
+      }));
+      setBookings(localFormatted);
     }
     setMessage("");
     setLoading(false);
@@ -120,7 +131,7 @@ export default function AdminSectionPage({ params }: { params: Promise<{ section
     loadBookings();
   }, []);
 
-  // Modal dialog state
+  // Success / Notice modal state
   const [modal, setModal] = useState<{
     open: boolean;
     title: string;
@@ -133,31 +144,80 @@ export default function AdminSectionPage({ params }: { params: Promise<{ section
     type: "info",
   });
 
-  async function updateStatus(id: string, status: string, paymentStatus: string) {
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-    
-    // Always update local storage demo state
-    updateBooking(id, status === "cancelled" ? "cancelled" : status === "confirmed" ? "confirmed" : "payment_review");
+  // Pre-update confirmation modal state
+  const [confirmModal, setConfirmModal] = useState<{
+    open: boolean;
+    bookingId: string;
+    bookingNumber: string;
+    guestName: string;
+    unitName: string;
+    targetStatus: string;
+    targetPaymentStatus: string;
+    title: string;
+    description: string;
+  }>({
+    open: false,
+    bookingId: "",
+    bookingNumber: "",
+    guestName: "",
+    unitName: "",
+    targetStatus: "",
+    targetPaymentStatus: "",
+    title: "",
+    description: "",
+  });
 
-    // Execute Supabase update matching column type
+  function promptConfirmation(
+    b: Booking,
+    targetStatus: string,
+    targetPaymentStatus: string,
+    title: string,
+    description: string
+  ) {
+    const guest = Array.isArray(b.profiles) ? b.profiles[0] : b.profiles;
+    const unit = Array.isArray(b.units) ? b.units[0] : b.units;
+
+    setConfirmModal({
+      open: true,
+      bookingId: b.id,
+      bookingNumber: b.booking_number,
+      guestName: guest?.full_name || "Guest",
+      unitName: unit?.name || "Stay Unit",
+      targetStatus,
+      targetPaymentStatus,
+      title,
+      description,
+    });
+  }
+
+  async function executeDatabaseUpdate() {
+    const { bookingId, bookingNumber, targetStatus, targetPaymentStatus } = confirmModal;
+    setConfirmModal({ ...confirmModal, open: false });
+
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(bookingId);
+    
+    // Always sync local storage demo state
+    updateBooking(bookingId, targetStatus === "cancelled" ? "cancelled" : targetStatus === "confirmed" ? "confirmed" : "payment_review");
+
+    // Execute Supabase update directly to Postgres database
     const query = isUuid
-      ? supabase.from("bookings").update({ booking_status: status, payment_status: paymentStatus }).eq("id", id)
-      : supabase.from("bookings").update({ booking_status: status, payment_status: paymentStatus }).eq("booking_number", id);
+      ? supabase.from("bookings").update({ booking_status: targetStatus, payment_status: targetPaymentStatus }).eq("id", bookingId)
+      : supabase.from("bookings").update({ booking_status: targetStatus, payment_status: targetPaymentStatus }).eq("booking_number", bookingId);
 
     const { error } = await query;
 
     if (error && isUuid) {
       setModal({
         open: true,
-        title: "Status Update Notice",
-        description: `Updated status locally. Database note: ${error.message}`,
+        title: "Database Update Notice",
+        description: `Updated status locally. Database response: ${error.message}`,
         type: "info",
       });
     } else {
       setModal({
         open: true,
-        title: "Status Updated Successfully",
-        description: `Reservation ${id} has been updated to ${status.replace("_", " ")}.`,
+        title: "Database Updated Successfully",
+        description: `Reservation ${bookingNumber} has been updated in database to ${targetPaymentStatus.replace("_", " ")}.`,
         type: "success",
       });
     }
@@ -276,6 +336,7 @@ export default function AdminSectionPage({ params }: { params: Promise<{ section
                       const total = Number(b.total_amount || 0);
                       const deposit = b.booking_status === "confirmed" ? Math.min(total, total * 0.25 || 120) : 0;
                       const isFullyPaid = b.payment_status === "paid" || b.payment_status === "fully_paid";
+                      const isDepositPaid = b.payment_status === "deposit_paid" || b.booking_status === "confirmed";
                       const balanceDue = isFullyPaid ? 0 : Math.max(0, total - deposit);
 
                       return (
@@ -299,10 +360,12 @@ export default function AdminSectionPage({ params }: { params: Promise<{ section
                           <td>
                             <strong>RM {total.toFixed(2)}</strong>
                             <br />
-                            <small style={{ color: isFullyPaid ? "var(--emerald)" : "var(--amber)", fontWeight: 600 }}>
+                            <small style={{ color: isFullyPaid ? "var(--emerald)" : isDepositPaid ? "var(--amber)" : "var(--muted)", fontWeight: 600 }}>
                               {isFullyPaid
                                 ? "✓ Fully Paid"
-                                : `Deposit: RM ${deposit.toFixed(2)} | Due: RM ${balanceDue.toFixed(2)}`}
+                                : isDepositPaid
+                                ? `Deposit Paid | Due: RM ${balanceDue.toFixed(2)}`
+                                : `Total: RM ${total.toFixed(2)}`}
                             </small>
                           </td>
                           <td>
@@ -312,31 +375,72 @@ export default function AdminSectionPage({ params }: { params: Promise<{ section
                           </td>
                           <td>
                             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                              {b.booking_status !== "confirmed" ? (
+                              {b.booking_status !== "confirmed" && !isFullyPaid ? (
                                 <div style={{ display: "flex", gap: 6 }}>
                                   <button
                                     className="button"
-                                    onClick={() => updateStatus(b.id, "confirmed", "deposit_paid")}
+                                    onClick={() =>
+                                      promptConfirmation(
+                                        b,
+                                        "confirmed",
+                                        "deposit_paid",
+                                        "Confirm Deposit Payment?",
+                                        `Confirm deposit payment for ${guest?.full_name || "Guest"} (${b.booking_number})? This will lock dates on the public availability calendar.`
+                                      )
+                                    }
                                     style={{ height: 32, padding: "0 10px", fontSize: "0.775rem" }}
                                   >
                                     <Check size={14} /> Confirm Deposit
                                   </button>
                                   <button
                                     className="button secondary"
-                                    onClick={() => updateStatus(b.id, "cancelled", "failed")}
+                                    onClick={() =>
+                                      promptConfirmation(
+                                        b,
+                                        "cancelled",
+                                        "failed",
+                                        "Reject / Cancel Reservation?",
+                                        `Are you sure you want to reject reservation ${b.booking_number} for ${guest?.full_name || "Guest"}?`
+                                      )
+                                    }
                                     style={{ height: 32, padding: "0 8px", fontSize: "0.775rem", color: "var(--rose)" }}
                                   >
                                     Reject
                                   </button>
                                 </div>
                               ) : !isFullyPaid ? (
-                                <button
-                                  className="button secondary"
-                                  onClick={() => updateStatus(b.id, "confirmed", "fully_paid")}
-                                  style={{ height: 32, padding: "0 10px", fontSize: "0.775rem", color: "var(--emerald)", borderColor: "var(--emerald-light)", background: "var(--emerald-light)" }}
-                                >
-                                  💵 Collect Balance (RM {balanceDue.toFixed(2)})
-                                </button>
+                                <div style={{ display: "flex", gap: 6 }}>
+                                  <button
+                                    className="button secondary"
+                                    onClick={() =>
+                                      promptConfirmation(
+                                        b,
+                                        "confirmed",
+                                        "fully_paid",
+                                        "Confirm Full Payment?",
+                                        `Confirm full payment received for ${guest?.full_name || "Guest"} (${b.booking_number})? Total amount: RM ${total.toFixed(2)}.`
+                                      )
+                                    }
+                                    style={{ height: 32, padding: "0 10px", fontSize: "0.775rem", color: "var(--emerald)", borderColor: "var(--emerald-light)", background: "var(--emerald-light)" }}
+                                  >
+                                    <CheckCircle2 size={14} /> Confirm Full Payment
+                                  </button>
+                                  <button
+                                    className="button secondary"
+                                    onClick={() =>
+                                      promptConfirmation(
+                                        b,
+                                        "cancelled",
+                                        "failed",
+                                        "Reject / Cancel Reservation?",
+                                        `Are you sure you want to cancel reservation ${b.booking_number}?`
+                                      )
+                                    }
+                                    style={{ height: 32, padding: "0 8px", fontSize: "0.775rem", color: "var(--rose)" }}
+                                  >
+                                    Reject
+                                  </button>
+                                </div>
                               ) : (
                                 <span style={{ color: "var(--emerald)", fontWeight: 700, fontSize: "0.825rem" }}>
                                   ✓ Dates Locked & Paid
@@ -898,6 +1002,105 @@ export default function AdminSectionPage({ params }: { params: Promise<{ section
               >
                 Okay, Understood
               </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Animated Pre-Database Update Confirmation Dialog */}
+      <AnimatePresence>
+        {confirmModal.open && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 9999,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 16
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setConfirmModal({ ...confirmModal, open: false })}
+              style={{
+                position: "absolute",
+                inset: 0,
+                background: "rgba(15, 23, 42, 0.6)",
+                backdropFilter: "blur(6px)"
+              }}
+            />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ type: "spring", damping: 25, stiffness: 350 }}
+              style={{
+                position: "relative",
+                width: "100%",
+                maxWidth: 460,
+                background: "#ffffff",
+                borderRadius: 16,
+                padding: 24,
+                boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.25)",
+                border: "1px solid var(--line)"
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <ShieldAlert size={26} color="var(--primary)" />
+                  <strong style={{ fontSize: "1.15rem", color: "var(--navy)" }}>{confirmModal.title}</strong>
+                </div>
+                <button
+                  onClick={() => setConfirmModal({ ...confirmModal, open: false })}
+                  style={{ background: "none", border: "none", cursor: "pointer", color: "var(--muted)", padding: 4 }}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <p style={{ fontSize: "0.925rem", color: "var(--ink)", lineHeight: 1.5, marginBottom: 16 }}>
+                {confirmModal.description}
+              </p>
+
+              <div
+                style={{
+                  padding: 12,
+                  borderRadius: 10,
+                  background: "var(--soft-bg)",
+                  fontSize: "0.85rem",
+                  color: "var(--navy)",
+                  marginBottom: 20,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 4
+                }}
+              >
+                <div><strong>Ref Number:</strong> {confirmModal.bookingNumber}</div>
+                <div><strong>Guest Name:</strong> {confirmModal.guestName}</div>
+                <div><strong>Unit:</strong> {confirmModal.unitName}</div>
+              </div>
+
+              <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+                <button
+                  className="button secondary"
+                  onClick={() => setConfirmModal({ ...confirmModal, open: false })}
+                  style={{ height: 40, padding: "0 16px" }}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="button"
+                  onClick={executeDatabaseUpdate}
+                  style={{ height: 40, padding: "0 18px", background: confirmModal.targetStatus === "cancelled" ? "var(--rose)" : undefined }}
+                >
+                  Proceed & Update Database
+                </button>
+              </div>
             </motion.div>
           </div>
         )}
