@@ -128,8 +128,30 @@ function AvailabilityCalendar() {
         const merged = new Set<string>(localSlugs);
         if (!error && data) {
           (data || []).forEach((row: { unit_slug: string }) => merged.add(row.unit_slug));
+          setBookedUnitSlugs(merged);
+        } else {
+          // Fallback: Query bookings table directly if RPC procedure is missing on Supabase
+          supabase
+            .from("bookings")
+            .select("check_in_date, check_out_date, booking_status, expires_at, units!inner(slug)")
+            .lt("check_in_date", checkOut)
+            .gt("check_out_date", checkIn)
+            .then(({ data: directData }) => {
+              const fallbackMerged = new Set<string>(localSlugs);
+              if (directData) {
+                directData.forEach((b: any) => {
+                  const status = b.booking_status;
+                  const active =
+                    ["confirmed", "checked_in", "completed", "payment_review"].includes(status) ||
+                    (["pending", "awaiting_payment"].includes(status) && (!b.expires_at || new Date(b.expires_at) > new Date()));
+                  if (active && b.units?.slug) {
+                    fallbackMerged.add(b.units.slug);
+                  }
+                });
+              }
+              setBookedUnitSlugs(fallbackMerged);
+            });
         }
-        setBookedUnitSlugs(merged);
       });
   }, [selected]);
 
