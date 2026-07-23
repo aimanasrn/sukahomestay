@@ -1,2 +1,125 @@
-import Link from "next/link"; import { BookingSearch } from "@/components/booking-search"; import { UnitCard } from "@/components/unit-card"; import { units } from "@/data/units";
-export default function Home(){return <><section className="shell hero"><div><h1>Find Your Perfect Stay at <em>SukaHomestay</em></h1><p>Enjoy a comfortable and spacious stay with flexible booking options for families, small groups and larger gatherings.</p><div className="actions"><Link className="button" href="#availability">Check availability</Link><Link className="button secondary" href="/accommodations">Explore accommodations</Link></div><BookingSearch/><div className="trust"><span>✓ Direct booking</span><span>✓ Secure reservation</span><span>✓ Flexible accommodation</span><span>✓ Responsive support</span></div></div><div className="hero-image"><img src="/images/sukahomestay-hero.png" alt="SukaHomestay property exterior"/></div></section><section id="availability" className="section soft"><div className="shell"><span className="eyebrow">Stay your way</span><h2 className="title">Accommodation for every plan</h2><p className="lead">Choose a full home, a comfortable private room, or reserve the whole house. Availability is checked before you continue.</p><div className="cards">{units.slice(0,3).map(unit=><UnitCard unit={unit} key={unit.id}/>)}</div></div></section><section className="section"><div className="shell split"><div><span className="eyebrow">Made for easy stays</span><h2 className="title">The comforts that make a house feel like home.</h2><p className="lead">Every booking is designed around the practical things that make travelling with family or friends easier.</p></div><div className="amenities">{["High-speed Wi-Fi","Air conditioning","Equipped kitchen","Free parking","Family friendly","Easy check-in"].map(a=><div className="amenity" key={a}>✓ {a}</div>)}</div></div></section><section className="section soft"><div className="shell"><span className="eyebrow">Simple from start to finish</span><h2 className="title">Book in three comfortable steps</h2><div className="steps"><div className="step"><h3>1. Check dates</h3><p>Pick your stay, travel dates and guest count.</p></div><div className="step"><h3>2. Reserve your space</h3><p>Review your clear price breakdown and submit a booking request.</p></div><div className="step"><h3>3. Upload payment proof</h3><p>Transfer securely, upload your receipt and receive confirmation after review.</p></div></div></div></section></>}
+"use client";
+
+import Link from "next/link";
+import { CheckCircle2, Wifi, Wind, Utensils, Car, Users, Key, ArrowRight } from "lucide-react";
+import { BookingSearch } from "@/components/booking-search";
+import { UnitCard } from "@/components/unit-card";
+import { units } from "@/data/units";
+import { useLanguage } from "@/context/language-context";
+
+export default function Home() {
+  const { t } = useLanguage();
+
+  const amenityList = [
+    { icon: Wifi, text: "High-Speed Wi-Fi" },
+    { icon: Wind, text: "Full Air Conditioning" },
+    { icon: Utensils, text: "Equipped Kitchen" },
+    { icon: Car, text: "Free Private Parking" },
+    { icon: Users, text: "Family & Group Friendly" },
+    { icon: Key, text: "Self & Easy Check-in" },
+  ];
+
+  return (
+    <>
+      {/* Hero Section */}
+      <section className="shell hero">
+        <div className="hero-content">
+          <span className="eyebrow">{t("hero_eyebrow")}</span>
+          <h1>
+            {t("hero_title_1")}<em>{t("hero_title_2")}</em>
+          </h1>
+          <p>{t("hero_lead")}</p>
+
+          <div className="actions">
+            <Link className="button" href="/availability">
+              <span>{t("hero_btn_book")}</span>
+              <ArrowRight size={16} />
+            </Link>
+            <Link className="button secondary" href="/accommodations">
+              {t("hero_btn_explore")}
+            </Link>
+          </div>
+
+          <BookingSearch />
+
+          <div className="trust">
+            <span><CheckCircle2 size={16} /> Direct Booking</span>
+            <span><CheckCircle2 size={16} /> Instant Price Breakdown</span>
+            <span><CheckCircle2 size={16} /> Secure Bank Transfer</span>
+            <span><CheckCircle2 size={16} /> Fast Host Confirmation</span>
+          </div>
+        </div>
+
+        <div className="hero-image">
+          <img src="/images/sukahomestay-hero.png" alt="SukaHomestay Luxury Property Exterior" />
+        </div>
+      </section>
+
+      {/* Accommodation Section */}
+      <section id="availability" className="section soft">
+        <div className="shell">
+          <span className="eyebrow">{t("features_eyebrow")}</span>
+          <h2 className="title">{t("features_title")}</h2>
+          <p className="lead">
+            Choose a full house for family privacy, a cozy roomstay for quick trips, or reserve the entire estate for grand gatherings.
+          </p>
+
+          <div className="cards">
+            {units.map((unit) => (
+              <UnitCard unit={unit} key={unit.id} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Amenities Section */}
+      <section className="section">
+        <div className="shell split">
+          <div>
+            <span className="eyebrow">EVERYTHING YOU NEED</span>
+            <h2 className="title">Comforts That Make A House Feel Like Home</h2>
+            <p className="lead">
+              We provide essential modern conveniences so you can focus on making memorable moments with family and friends.
+            </p>
+          </div>
+
+          <div className="amenities">
+            {amenityList.map((item) => (
+              <div className="amenity" key={item.text}>
+                <item.icon size={20} />
+                <span>{item.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 3-Step Process Section */}
+      <section className="section soft">
+        <div className="shell">
+          <span className="eyebrow">{t("steps_eyebrow")}</span>
+          <h2 className="title">{t("steps_title")}</h2>
+          <div className="steps">
+            <div className="step">
+              <div className="step-number">1</div>
+              <h3>{t("step_1_title")}</h3>
+              <p>{t("step_1_desc")}</p>
+            </div>
+
+            <div className="step">
+              <div className="step-number">2</div>
+              <h3>{t("step_2_title")}</h3>
+              <p>{t("step_2_desc")}</p>
+            </div>
+
+            <div className="step">
+              <div className="step-number">3</div>
+              <h3>{t("step_3_title")}</h3>
+              <p>{t("step_3_desc")}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
