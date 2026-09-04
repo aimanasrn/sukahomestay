@@ -1,6 +1,6 @@
 # Supabase database
 
-The canonical schema is the ordered SQL in `supabase/migrations`. It covers profiles, catalog/inventory, rates, availability blocks, bookings/items/guests, manual payments, reviews, notifications, audit logs, and settings. UUIDs are generated in PostgreSQL and all amounts use integer sen. Identity-card/passport data is not collected.
+The canonical schema is the ordered SQL in `supabase/migrations`. It covers profiles, catalog/inventory, rates, availability blocks, bookings/items/guests, manual payments/refunds, reviews, notifications, audit logs, and settings. UUIDs are generated in PostgreSQL and all amounts use integer sen. Identity-card/passport data is not collected.
 
 Apply locally with `npm run supabase:reset`; apply linked migrations with `npm run supabase:push`. Never reset a hosted environment containing data. Generate fresh database types after applying the schema:
 

@@ -16,9 +16,10 @@ create type public.block_type as enum ('OWNER_BLOCK', 'MAINTENANCE');
 create type public.payment_verification_status as enum (
   'NOT_SUBMITTED', 'PENDING_VERIFICATION', 'VERIFIED', 'REJECTED'
 );
+create type public.refund_status as enum ('PENDING', 'SUCCEEDED', 'FAILED');
 create type public.notification_type as enum (
   'BOOKING_CREATED', 'PAYMENT_RECEIVED', 'BOOKING_CONFIRMED', 'PAYMENT_FAILED',
-  'BOOKING_CANCELLED', 'CHECKIN_REMINDER', 'CHECKOUT_REMINDER'
+  'BOOKING_CANCELLED', 'CHECKIN_REMINDER', 'CHECKOUT_REMINDER', 'REFUND_PROCESSED'
 );
 
 create table public.profiles (
@@ -230,6 +231,16 @@ create table public.manual_payments (
   updated_at timestamptz not null default now()
 );
 
+create table public.refunds (
+  id uuid primary key default gen_random_uuid(),
+  manual_payment_id uuid not null references public.manual_payments(id),
+  amount_sen integer not null check (amount_sen > 0),
+  status public.refund_status not null default 'PENDING',
+  reason text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create table public.reviews (
   id uuid primary key default gen_random_uuid(),
   customer_id uuid not null references auth.users(id) on delete cascade,
@@ -295,6 +306,7 @@ create index bookings_active_overlap_idx on public.bookings(property_id, check_i
 create index booking_items_booking_id_idx on public.booking_items(booking_id);
 create index booking_items_room_id_idx on public.booking_items(room_id) where room_id is not null;
 create index manual_payments_booking_id_idx on public.manual_payments(booking_id);
+create index refunds_manual_payment_id_idx on public.refunds(manual_payment_id);
 create index audit_logs_created_at_idx on public.audit_logs(created_at desc);
 
 create or replace function private.set_updated_at()
@@ -306,7 +318,7 @@ revoke all on function private.set_updated_at() from public, anon, authenticated
 do $$
 declare table_name text;
 begin
-  foreach table_name in array array['profiles','properties','rooms','rate_plans','bookings','manual_payments','reviews','app_settings']
+  foreach table_name in array array['profiles','properties','rooms','rate_plans','bookings','manual_payments','refunds','reviews','app_settings']
   loop
     execute format('create trigger set_updated_at before update on public.%I for each row execute function private.set_updated_at()', table_name);
   end loop;
@@ -378,7 +390,7 @@ begin
     'profiles','properties','rooms','property_images','room_images','amenities',
     'property_amenities','room_amenities','rate_plans','seasonal_rates',
     'availability_blocks','bookings','booking_items','booking_guests',
-    'manual_payments','reviews','notifications','audit_logs','app_settings'
+    'manual_payments','refunds','reviews','notifications','audit_logs','app_settings'
   ] loop execute format('alter table public.%I enable row level security', table_name); end loop;
 end $$;
 
@@ -413,6 +425,8 @@ create policy booking_guests_select_own on public.booking_guests for select to a
   using (exists (select 1 from public.bookings b where b.id = booking_id and (b.customer_id = (select auth.uid()) or (select private.is_admin()))));
 create policy manual_payments_select_own on public.manual_payments for select to authenticated
   using (exists (select 1 from public.bookings b where b.id = booking_id and (b.customer_id = (select auth.uid()) or (select private.is_admin()))));
+create policy refunds_select_own on public.refunds for select to authenticated
+  using (exists (select 1 from public.manual_payments mp join public.bookings b on b.id = mp.booking_id where mp.id = manual_payment_id and (b.customer_id = (select auth.uid()) or (select private.is_admin()))));
 create policy reviews_public_read on public.reviews for select to anon, authenticated
   using (approved or customer_id = (select auth.uid()) or (select private.is_admin()));
 create policy reviews_customer_insert on public.reviews for insert to authenticated
@@ -431,7 +445,7 @@ grant select on public.properties, public.rooms, public.property_images, public.
   public.amenities, public.property_amenities, public.room_amenities, public.rate_plans,
   public.seasonal_rates, public.reviews to anon, authenticated;
 grant select on public.profiles, public.bookings, public.booking_items, public.booking_guests,
-  public.manual_payments, public.notifications to authenticated;
+  public.manual_payments, public.refunds, public.notifications to authenticated;
 grant update (full_name, phone, avatar_path) on public.profiles to authenticated;
 grant insert (customer_id, property_id, booking_id, rating, comment) on public.reviews to authenticated;
 grant update (read_at) on public.notifications to authenticated;

@@ -4,7 +4,7 @@ select plan(16);
 
 select is(
   (select count(*)::integer from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind='r' and c.relrowsecurity),
-  19,
+  20,
   'RLS is enabled on every exposed application table'
 );
 

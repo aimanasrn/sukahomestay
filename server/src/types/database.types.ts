@@ -22,6 +22,7 @@ export type Database = {
       booking_items: Table<{ id: string; booking_id: string; property_id: string; room_id: string | null; inventory_type: Database["public"]["Enums"]["inventory_type"]; quantity: number; nightly_rate_sen: number; total_sen: number; created_at: string }>;
       booking_guests: Table<{ id: string; booking_id: string; full_name: string; email: string | null; phone: string | null; is_primary: boolean; created_at: string }>;
       manual_payments: Table<{ id: string; booking_id: string; payment_method: string | null; bank_name: string | null; transaction_reference: string | null; amount_sen: number | null; payment_date: string | null; receipt_path: string | null; internal_notes: string | null; verification_status: Database["public"]["Enums"]["payment_verification_status"]; verified_by: string | null; verified_at: string | null; rejection_reason: string | null; created_at: string; updated_at: string }>;
+      refunds: Table<{ id:string; manual_payment_id:string; amount_sen:number; status:Database["public"]["Enums"]["refund_status"]; reason:string|null; created_at:string; updated_at:string }>;
       reviews: Table<{ id: string; customer_id: string; property_id: string; booking_id: string; rating: number; comment: string | null; approved: boolean; created_at: string; updated_at: string }>;
       notifications: Table<{ id: string; customer_id: string | null; booking_id: string | null; type: Database["public"]["Enums"]["notification_type"]; channel: string; subject: string; content: string; read_at: string | null; sent_at: string | null; created_at: string }>;
       audit_logs: Table<{ id: string; actor_id: string | null; action: string; entity_type: string; entity_id: string | null; metadata: Json | null; ip_address: unknown | null; created_at: string }>;
@@ -36,7 +37,8 @@ export type Database = {
       inventory_type: "ENTIRE_PROPERTY" | "ROOM";
       block_type: "OWNER_BLOCK" | "MAINTENANCE";
       payment_verification_status: "NOT_SUBMITTED" | "PENDING_VERIFICATION" | "VERIFIED" | "REJECTED";
-      notification_type: "BOOKING_CREATED" | "PAYMENT_RECEIVED" | "BOOKING_CONFIRMED" | "PAYMENT_FAILED" | "BOOKING_CANCELLED" | "CHECKIN_REMINDER" | "CHECKOUT_REMINDER";
+      refund_status: "PENDING" | "SUCCEEDED" | "FAILED";
+      notification_type: "BOOKING_CREATED" | "PAYMENT_RECEIVED" | "BOOKING_CONFIRMED" | "PAYMENT_FAILED" | "BOOKING_CANCELLED" | "CHECKIN_REMINDER" | "CHECKOUT_REMINDER" | "REFUND_PROCESSED";
     };
     CompositeTypes: Record<never, never>;
   };

@@ -39,3 +39,5 @@ npm run test:e2e --workspace client
 Database tests require the local Supabase stack. Realtime is intentionally not enabled for application tables yet; polling/query invalidation remains the reliable path and avoids adding publication surface before production load warrants it.
 
 Documentation: [architecture](docs/architecture.md), [authentication](docs/authentication.md), [database](docs/database.md), [RLS](docs/rls.md), [storage](docs/storage.md), [migration](docs/database-migration.md), [backup/recovery](docs/backup-recovery.md), [environment](docs/environment.md), and [Ubuntu deployment](docs/ubuntu-deployment.md).
+
+The latest [security verification record](docs/security-verification.md) clearly separates completed static/application checks from live database checks that require Docker or an active hosted development project.

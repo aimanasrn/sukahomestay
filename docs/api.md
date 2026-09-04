@@ -25,6 +25,10 @@ All endpoints are under `/api/v1` and respond with `{ success, data, message }`.
 | PATCH | `/admin/bookings/:id/dates` | Admin | Change dates with locked conflict recheck |
 | GET/PUT | `/admin/settings` | Admin | Read/update bank, WhatsApp, policy and templates |
 | POST | `/admin/properties` | Admin | Create property |
+| PUT | `/admin/properties/:id` | Admin | Update property/catalog status |
+| POST | `/admin/properties/:propertyId/rooms` | Admin | Create room inventory |
+| PUT | `/admin/rooms/:id` | Admin | Update room inventory |
+| PUT | `/admin/rate-plans/:id` | Admin | Update server-managed pricing |
 | POST | `/admin/calendar/blocks` | Admin | Block inventory dates |
 | GET | `/admin/payments/:id/receipt-url` | Admin | Create a five-minute signed receipt URL |
 

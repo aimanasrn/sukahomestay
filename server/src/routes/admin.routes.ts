@@ -22,4 +22,8 @@ adminRouter.put("/settings", asyncHandler(controller.updateSettings));
 adminRouter.get("/calendar", asyncHandler(controller.calendar));
 adminRouter.get("/payments/:id/receipt-url", asyncHandler(controller.receiptUrl));
 adminRouter.post("/properties", asyncHandler(controller.createProperty));
+adminRouter.put("/properties/:id", asyncHandler(controller.updateProperty));
+adminRouter.post("/properties/:propertyId/rooms", asyncHandler(controller.createRoom));
+adminRouter.put("/rooms/:id", asyncHandler(controller.updateRoom));
+adminRouter.put("/rate-plans/:id", asyncHandler(controller.updateRatePlan));
 adminRouter.post("/calendar/blocks", asyncHandler(controller.blockDates));

@@ -3,6 +3,7 @@ import { subMonths } from "date-fns";
 import { z } from "zod";
 import { sql } from "../config/database.js";
 import { ok } from "../utils/response.js";
+import { ApiError } from "../utils/api-error.js";
 import * as workflow from "../services/admin-booking.service.js";
 import { loadBooking } from "../services/booking.service.js";
 import { createReceiptSignedUrl } from "../services/storage.service.js";
@@ -38,6 +39,8 @@ const blockSchema = z
     path: ["endDate"],
     message: "End date must be after start date",
   });
+const roomSchema = z.object({ name:z.string().min(2), roomType:z.string().min(2), capacity:z.coerce.number().int().positive(), bedConfig:z.string().min(2), priceSen:z.coerce.number().int().nonnegative(), availableUnits:z.coerce.number().int().positive().default(1), active:z.boolean().default(true) });
+const ratePlanSchema = z.object({ name:z.string().min(2), weekdayPriceSen:z.coerce.number().int().nonnegative(), weekendPriceSen:z.coerce.number().int().nonnegative(), publicHolidayPriceSen:z.coerce.number().int().nonnegative().optional(), extraGuestFeeSen:z.coerce.number().int().nonnegative().default(0), includedGuests:z.coerce.number().int().positive().default(2), minimumStay:z.coerce.number().int().positive().default(1), maximumStay:z.coerce.number().int().positive().default(30), active:z.boolean().default(true) }).refine(v=>v.maximumStay>=v.minimumStay,{path:["maximumStay"],message:"Maximum stay must not be shorter than minimum stay"});
 const reasonSchema = z.object({ reason: z.string().trim().min(3).max(1000) });
 const stayStatusSchema = z.object({ status: z.enum(["CHECKED_IN", "COMPLETED"]) });
 const expirySchema = z.object({ hours: z.coerce.number().int().positive().max(720).default(24), autoExpiryDisabled: z.boolean().default(false) });
@@ -92,21 +95,20 @@ export async function dashboard(_req: Request, res: Response) {
   });
 }
 export async function createProperty(req: Request, res: Response) {
-  return ok(
-    res,
-    await (async()=>{const p=propertySchema.parse(req.body);const rows=await sql<any[]>`insert into public.properties(name,slug,description,address,city,state,max_guests,bedrooms,bathrooms,base_price_sen,cleaning_fee_sen,security_deposit_sen,house_rules,cancellation_policy,status) values(${p.name},${p.slug},${p.description},${p.address},${p.city},${p.state},${p.maxGuests},${p.bedrooms},${p.bathrooms},${p.basePriceSen},${p.cleaningFeeSen},${p.securityDepositSen},${p.houseRules},${p.cancellationPolicy},${p.status}) returning *`;return rows[0];})(),
-    "Property created",
-    201,
-  );
+  const p=propertySchema.parse(req.body);
+  const rows=await sql<any[]>`insert into public.properties(name,slug,description,address,city,state,max_guests,bedrooms,bathrooms,base_price_sen,cleaning_fee_sen,security_deposit_sen,house_rules,cancellation_policy,status) values(${p.name},${p.slug},${p.description},${p.address},${p.city},${p.state},${p.maxGuests},${p.bedrooms},${p.bathrooms},${p.basePriceSen},${p.cleaningFeeSen},${p.securityDepositSen},${p.houseRules},${p.cancellationPolicy},${p.status}) returning *`;
+  await sql`insert into public.audit_logs(actor_id,action,entity_type,entity_id) values(${req.auth!.userId},'PROPERTY_CREATED','Property',${rows[0].id})`;
+  return ok(res,rows[0],"Property created",201);
 }
+export async function updateProperty(req:Request,res:Response){const p=propertySchema.parse(req.body);const rows=await sql<any[]>`update public.properties set name=${p.name},slug=${p.slug},description=${p.description},address=${p.address},city=${p.city},state=${p.state},max_guests=${p.maxGuests},bedrooms=${p.bedrooms},bathrooms=${p.bathrooms},base_price_sen=${p.basePriceSen},cleaning_fee_sen=${p.cleaningFeeSen},security_deposit_sen=${p.securityDepositSen},house_rules=${p.houseRules},cancellation_policy=${p.cancellationPolicy},status=${p.status} where id=${String(req.params.id)} returning *`;if(!rows[0])throw new ApiError(404,"Property not found");await sql`insert into public.audit_logs(actor_id,action,entity_type,entity_id) values(${req.auth!.userId},'PROPERTY_UPDATED','Property',${String(req.params.id)})`;return ok(res,rows[0],"Property updated");}
+export async function createRoom(req:Request,res:Response){const room=roomSchema.parse(req.body);const propertyId=String(req.params.propertyId);const rows=await sql<any[]>`insert into public.rooms(property_id,name,room_type,capacity,bed_config,price_sen,available_units,active) values(${propertyId},${room.name},${room.roomType},${room.capacity},${room.bedConfig},${room.priceSen},${room.availableUnits},${room.active}) returning *`;await sql`insert into public.audit_logs(actor_id,action,entity_type,entity_id,metadata) values(${req.auth!.userId},'ROOM_CREATED','Room',${rows[0].id},jsonb_build_object('propertyId',${propertyId}))`;return ok(res,rows[0],"Room created",201);}
+export async function updateRoom(req:Request,res:Response){const room=roomSchema.parse(req.body);const id=String(req.params.id);const rows=await sql<any[]>`update public.rooms set name=${room.name},room_type=${room.roomType},capacity=${room.capacity},bed_config=${room.bedConfig},price_sen=${room.priceSen},available_units=${room.availableUnits},active=${room.active} where id=${id} returning *`;if(!rows[0])throw new ApiError(404,"Room not found");await sql`insert into public.audit_logs(actor_id,action,entity_type,entity_id) values(${req.auth!.userId},'ROOM_UPDATED','Room',${id})`;return ok(res,rows[0],"Room updated");}
+export async function updateRatePlan(req:Request,res:Response){const plan=ratePlanSchema.parse(req.body);const id=String(req.params.id);const rows=await sql<any[]>`update public.rate_plans set name=${plan.name},weekday_price_sen=${plan.weekdayPriceSen},weekend_price_sen=${plan.weekendPriceSen},public_holiday_price_sen=${plan.publicHolidayPriceSen??null},extra_guest_fee_sen=${plan.extraGuestFeeSen},included_guests=${plan.includedGuests},minimum_stay=${plan.minimumStay},maximum_stay=${plan.maximumStay},active=${plan.active} where id=${id} returning *`;if(!rows[0])throw new ApiError(404,"Rate plan not found");await sql`insert into public.audit_logs(actor_id,action,entity_type,entity_id) values(${req.auth!.userId},'RATE_PLAN_UPDATED','RatePlan',${id})`;return ok(res,rows[0],"Pricing updated");}
 export async function blockDates(req: Request, res: Response) {
   const input = blockSchema.parse(req.body);
-  return ok(
-    res,
-    (await sql<any[]>`insert into public.availability_blocks(property_id,room_id,start_date,end_date,type,note,created_by) values(${input.propertyId},${input.roomId??null}::uuid,${input.startDate}::date,${input.endDate}::date,${input.type},${input.note??null},${req.auth!.userId}) returning *`)[0],
-    "Dates blocked",
-    201,
-  );
+  const rows=await sql<any[]>`insert into public.availability_blocks(property_id,room_id,start_date,end_date,type,note,created_by) values(${input.propertyId},${input.roomId??null}::uuid,${input.startDate}::date,${input.endDate}::date,${input.type},${input.note??null},${req.auth!.userId}) returning *`;
+  await sql`insert into public.audit_logs(actor_id,action,entity_type,entity_id) values(${req.auth!.userId},'AVAILABILITY_BLOCK_CREATED','AvailabilityBlock',${rows[0].id})`;
+  return ok(res,rows[0],"Dates blocked",201);
 }
 export async function bookings(_req: Request, res: Response) {
   return ok(
