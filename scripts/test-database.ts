@@ -22,7 +22,15 @@ const ok = (label: string) => {
   passed++;
   console.log(`PASS ${label}`);
 };
-const date = (day: number) => `2027-01-${String(day).padStart(2, "0")}`;
+const baseDate = new Date();
+baseDate.setUTCDate(
+  baseDate.getUTCDate() + 14 + ((5 - baseDate.getUTCDay() + 7) % 7),
+);
+const date = (day: number) => {
+  const d = new Date(baseDate);
+  d.setUTCDate(d.getUTCDate() + day - 1);
+  return d.toISOString().slice(0, 10);
+};
 const input = (ids: Resource[], start = 1, end = 3) => ({
   check_in: date(start),
   check_out: date(end),
@@ -186,7 +194,11 @@ try {
   await submit(input(["ROOM_C"], 19, 20));
   ok("Maintenance blocks only its resource");
   await client.query(
-    `insert into public.rate_rules(package_id,start_date,end_date,nightly_sen) values('MAIN','2027-01-22','2027-01-23',99900); update public.accommodation_packages set weekend_rate=50000 where id='MAIN';`,
+    `insert into public.rate_rules(package_id,start_date,end_date,nightly_sen) values('MAIN',$1,$2,99900)`,
+    [date(22), date(23)],
+  );
+  await client.query(
+    "update public.accommodation_packages set weekend_rate=50000 where id='MAIN'",
   );
   const price = await client.query("select public.get_quote($1) as q", [
     input(["MAIN"], 22, 25),

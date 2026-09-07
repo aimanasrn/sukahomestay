@@ -16,6 +16,11 @@ const url = import.meta.env.VITE_SUPABASE_URL;
 const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 export const supabase = url && key ? createClient(url, key) : null;
 export const isDemo = !url && !key;
+export function clearDemoBookings() {
+  if (!isDemo) return;
+  for (const key of ["bookings", "blocks", "payment-keys"])
+    localStorage.removeItem(`suka.${key}`);
+}
 const read = <T>(key: string, fallback: T): T => {
   try {
     return (
@@ -330,13 +335,11 @@ export async function saveAccommodation(a: Catalog["accommodations"][number]) {
     .eq("id", a.id);
   fail(error);
   for (const language of ["ms", "en"] as const) {
-    const { error } = await supabase
-      .from("accommodation_translations")
-      .upsert({
-        package_id: a.id,
-        language,
-        description: a.description[language],
-      });
+    const { error } = await supabase.from("accommodation_translations").upsert({
+      package_id: a.id,
+      language,
+      description: a.description[language],
+    });
     fail(error);
   }
 }

@@ -112,21 +112,27 @@ export function Photo({
   alt?: string;
   src?: string;
 }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const source =
     src || accommodation?.photos[0] || imageFor(accommodation?.id || "MAIN");
-  const placeholder = source.startsWith("/images/");
+  const [failed, setFailed] = useState(false);
+  useEffect(() => setFailed(false), [source]);
+  const displayed = failed ? imageFor(accommodation?.id || "MAIN") : source;
+  const placeholder = displayed.startsWith("/images/");
   return (
     <div className={`photo ${className}`}>
       <img
-        src={source}
-        alt={alt || t("photo")}
+        src={displayed}
+        alt={
+          alt ||
+          (placeholder
+            ? t("photo")
+            : accommodation
+              ? names[accommodation.id][lang]
+              : t("gallery"))
+        }
         loading="lazy"
-        onError={(e) => {
-          const el = e.currentTarget;
-          if (!el.src.endsWith(imageFor(accommodation?.id || "MAIN")))
-            el.src = imageFor(accommodation?.id || "MAIN");
-        }}
+        onError={() => setFailed(true)}
       />
       {placeholder && <span className="photo-caption">{t("photo")}</span>}
     </div>
@@ -616,6 +622,22 @@ export function Footer() {
 }
 export function ScrollManager() {
   const location = useLocation();
+  const { lang, t } = useLanguage();
+  useEffect(() => {
+    const id = location.pathname.split("/")[2] as PackageId;
+    const title =
+      location.pathname.startsWith("/stay/") && names[id]
+        ? names[id][lang]
+        : location.pathname.startsWith("/admin")
+          ? t("admin")
+          : location.pathname === "/book"
+            ? t("planTitle")
+            : [t("hero1"), t("hero2"), t("hero3")].join(" ");
+    document.title = `${title} | SUKA HOMESTAY`;
+    document
+      .querySelector('meta[name="description"]')
+      ?.setAttribute("content", t("heroDesc"));
+  }, [location.pathname, lang]);
   useEffect(() => {
     window.history.scrollRestoration = "manual";
     if (location.hash) {

@@ -27,6 +27,17 @@ export default function Home() {
   const { catalog, setDraft } = useApp();
   const [selected, setSelected] = useState<Resource[]>(["MAIN"]);
   const [gallery, setGallery] = useState<string | null>(null);
+  const [heroFailed, setHeroFailed] = useState(false);
+  const heroSrc = heroFailed
+    ? "/images/courtyard.webp"
+    : catalog.accommodations.find((a) => a.id === "WHOLE")?.photos[0] ||
+      "/images/courtyard.webp";
+  const actualGallery = [
+    ...new Set(catalog.accommodations.flatMap((a) => a.photos)),
+  ];
+  const galleryImages = actualGallery.length
+    ? actualGallery.slice(0, 6)
+    : ["/images/courtyard.webp", "/images/bedroom.webp"];
   const beds = selected.reduce((s, r) => s + (r === "MAIN" ? 4 : 1), 0),
     baths = selected.reduce((s, r) => s + (r === "MAIN" ? 3 : 1), 0);
   return (
@@ -34,8 +45,9 @@ export default function Home() {
       <section className="hero">
         <img
           className="hero-image"
-          src="/images/courtyard.webp"
-          alt={t("photo")}
+          src={heroSrc}
+          alt={heroSrc.startsWith("/images/") ? t("photo") : "SUKA HOMESTAY"}
+          onError={() => setHeroFailed(true)}
           fetchPriority="high"
         />
         <div className="hero-shade" />
@@ -53,7 +65,9 @@ export default function Home() {
             <ArrowRight size={27} />
           </a>
         </div>
-        <span className="hero-caption">{t("photo")}</span>
+        {heroSrc.startsWith("/images/") && (
+          <span className="hero-caption">{t("photo")}</span>
+        )}
       </section>
       <div className="search-wrap">
         <SearchBar />
@@ -156,26 +170,26 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {(["MAIN", "ROOM_A", "WHOLE"] as const).map((id) => (
-                <tr key={id}>
-                  <td>
-                    {id === "ROOM_A" ? "Roomstay A / B / C" : names[id][lang]}
-                  </td>
-                  <td>{id === "MAIN" ? 4 : id === "WHOLE" ? 7 : 1}</td>
-                  <td>{id === "MAIN" ? 3 : id === "WHOLE" ? 6 : 1}</td>
-                  {["living", "dining", "kitchen"].map((k) => (
-                    <td key={k}>
-                      {catalog.accommodations
-                        .find((a) => a.id === id)
-                        ?.amenities.includes(k) ? (
-                        <Check size={17} aria-label={t("included")} />
-                      ) : (
-                        <span aria-label={t("notIncluded")}>—</span>
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
+              {(["MAIN", "ROOM_A", "ROOM_B", "ROOM_C", "WHOLE"] as const).map(
+                (id) => (
+                  <tr key={id}>
+                    <td>{names[id][lang]}</td>
+                    <td>{id === "MAIN" ? 4 : id === "WHOLE" ? 7 : 1}</td>
+                    <td>{id === "MAIN" ? 3 : id === "WHOLE" ? 6 : 1}</td>
+                    {["living", "dining", "kitchen"].map((k) => (
+                      <td key={k}>
+                        {catalog.accommodations
+                          .find((a) => a.id === id)
+                          ?.amenities.includes(k) ? (
+                          <Check size={17} aria-label={t("included")} />
+                        ) : (
+                          <span aria-label={t("notIncluded")}>—</span>
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ),
+              )}
             </tbody>
           </table>
         </div>
@@ -211,10 +225,10 @@ export default function Home() {
             <span className="eyebrow">{t("galleryEyebrow")}</span>
             <h2>{t("galleryTitle")}</h2>
           </div>
-          <p>{t("galleryDesc")}</p>
+          <p>{t(actualGallery.length ? "stayDesc" : "galleryDesc")}</p>
         </div>
         <div className="gallery-rail">
-          {["/images/courtyard.webp", "/images/bedroom.webp"].map((src, n) => (
+          {galleryImages.map((src, n) => (
             <button
               key={src}
               className={`gallery-image gallery-${n}`}

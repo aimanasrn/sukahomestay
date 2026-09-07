@@ -11,7 +11,7 @@ const Booking = lazy(() => import("./pages/Booking"));
 const Admin = lazy(() => import("./pages/Admin"));
 function Layout() {
   const { t } = useLanguage();
-  const { error, reload } = useApp();
+  const { error, reload, loading } = useApp();
   return (
     <>
       <a className="skip-link" href="#main-content">
@@ -25,7 +25,13 @@ function Layout() {
         </Notice>
       )}
       <main id="main-content" tabIndex={-1}>
-        <Outlet />
+        {loading ? (
+          <div className="page-loading">{t("loading")}</div>
+        ) : error ? (
+          <div className="page-loading">{t("REQUEST_FAILED")}</div>
+        ) : (
+          <Outlet />
+        )}
       </main>
       <Footer />
       <WhatsApp />

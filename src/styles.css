@@ -324,6 +324,7 @@ textarea:focus {
   min-height: 46px;
   padding: 12px 22px;
 }
+
 .menu {
   display: none;
 }
@@ -1102,6 +1103,22 @@ footer {
   gap: 15px;
   height: 150px;
   margin-top: 15px;
+}
+.detail-summary {
+  margin-top: 22px;
+}
+.detail-summary .summary {
+  position: static;
+}
+.detail-summary .summary-photo {
+  display: none;
+}
+.gallery-rail {
+  grid-auto-rows: 300px;
+  height: auto;
+}
+.gallery-rail .gallery-image {
+  min-height: 300px;
 }
 .detail-columns {
   display: grid;
@@ -3413,5 +3430,48 @@ footer {
   .search-field:nth-child(4) {
     border-left: 1px solid var(--border);
     padding-left: 15px;
+  }
+}
+
+@media (min-width: 1151px) {
+  .navigation {
+    font-size: 14px;
+  }
+  .hero-content p {
+    font-size: 16px;
+  }
+  .hero-link {
+    font-size: 16px;
+  }
+  .search-field .field > span {
+    font-size: 12px;
+  }
+  .search-field input,
+  .search-field select {
+    font-size: 14px;
+  }
+  .search-bar > .button {
+    font-size: 13px;
+  }
+  .stay-intro h2 {
+    font-size: 32px;
+  }
+  .stay-intro p {
+    font-size: 14px;
+  }
+  .stay-card h3 {
+    font-size: 24px;
+  }
+  .stay-card .counts {
+    font-size: 11px;
+  }
+  .stay-bottom small {
+    font-size: 10px;
+  }
+  .stay-bottom > span:first-child {
+    font-size: 11px;
+  }
+  .stay-bottom strong {
+    font-size: 23px;
   }
 }

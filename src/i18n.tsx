@@ -7,6 +7,7 @@ import {
 } from "react";
 import type { Lang } from "./domain";
 const en = {
+  clearDemo: "Clear demo bookings",
   stays: "Accommodation",
   spaces: "Spaces & facilities",
   gallery: "Gallery",
@@ -290,6 +291,7 @@ const en = {
 type Key = keyof typeof en;
 const ms: Record<Key, string> = {
   ...en,
+  clearDemo: "Kosongkan tempahan demo",
   stays: "Penginapan",
   spaces: "Ruang & Kemudahan",
   gallery: "Galeri",
@@ -585,7 +587,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     localStorage.setItem("suka.language", lang);
     document.documentElement.lang = lang;
-    document.title = `SUKA HOMESTAY | ${lang === "ms" ? "Satu rumah, pelbagai pilihan penginapan" : "One home, flexible ways to stay"}`;
     document
       .querySelector('meta[name="description"]')
       ?.setAttribute("content", (lang === "ms" ? ms : en).heroDesc);

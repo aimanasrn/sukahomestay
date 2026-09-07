@@ -1,14 +1,52 @@
 import { Link, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { useLanguage, type TranslationKey } from "../i18n";
 import { useApp } from "../state";
-import { AvailabilityCalendar, Counts, Photo, Notice } from "../components";
-import { money, names, selectedResources, type PackageId } from "../domain";
+import {
+  AvailabilityCalendar,
+  Counts,
+  Photo,
+  Notice,
+  PriceSummary,
+  ErrorNotice,
+} from "../components";
+import {
+  money,
+  names,
+  selectedResources,
+  type PackageId,
+  type Quote,
+} from "../domain";
+import { getQuote } from "../api";
 export default function Stay() {
   const { id } = useParams();
   const { t, lang } = useLanguage();
-  const { catalog, setDraft } = useApp();
+  const { catalog, setDraft, draft } = useApp();
   const a = catalog.accommodations.find((a) => a.id === id);
+  const [quote, setQuote] = useState<Quote | null>(null);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    if (a) setDraft({ resources: selectedResources(a.id) });
+  }, [id]);
+  useEffect(() => {
+    if (!a) return;
+    let active = true;
+    setError("");
+    getQuote({ ...draft, resources: selectedResources(a.id) }, catalog)
+      .then((q) => {
+        if (active) setQuote(q);
+      })
+      .catch(() => {
+        if (active) {
+          setQuote(null);
+          setError("INVALID_DATES");
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, [id, draft.check_in, draft.check_out, catalog]);
   if (!a)
     return (
       <div className="section">
@@ -99,6 +137,10 @@ export default function Stay() {
         </div>
         <div>
           <AvailabilityCalendar ids={selectedResources(a.id)} />
+          <div className="detail-summary">
+            <ErrorNotice code={error} />
+            <PriceSummary quote={quote} />
+          </div>
           <Link
             className="button full"
             to="/book"

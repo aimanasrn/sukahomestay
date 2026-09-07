@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useLanguage, type TranslationKey } from "../i18n";
 import { useApp } from "../state";
+import { clearDemoBookings } from "../api";
 import {
   adminAction,
   adminAllocations,
@@ -216,7 +217,17 @@ export default function Admin() {
         <div className="admin-content">
           {isDemo && (
             <Notice>
-              {t("demoNotice")} {t("demoPrivacy")}
+              {t("demoNotice")} {t("demoPrivacy")}{" "}
+              <button
+                className="text-link"
+                onClick={() => {
+                  clearDemoBookings();
+                  setAuthorized(false);
+                  setTab("overview");
+                }}
+              >
+                {t("clearDemo")}
+              </button>
             </Notice>
           )}
           {tab === "overview" || tab === "bookings" ? (

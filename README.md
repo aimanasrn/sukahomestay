@@ -18,6 +18,8 @@ Open **http://127.0.0.1:5173**. With blank Supabase environment variables, the a
 
 Routes: `/`, `/stay/MAIN`, `/stay/ROOM_A`, `/stay/ROOM_B`, `/stay/ROOM_C`, `/stay/WHOLE`, `/book`, `/admin`.
 
+Use the demo dashboard's **Kosongkan tempahan demo / Clear demo bookings** button to remove fictional bookings, blocks and payment idempotency keys while preserving property settings and language. Design references and the visual verification ledger are in [docs/design/spec.md](docs/design/spec.md).
+
 ## What is included
 
 - Responsive customer site, accommodation details and calendars, selectable property diagram, comparison table, facilities, gallery lightbox, configurable location, FAQs and WhatsApp contact.
@@ -92,7 +94,7 @@ npm test
 npm run test:db
 ```
 
-`test:db` requires a local **isolated test** PostgreSQL server and `TEST_DATABASE_URL` (default `postgresql://postgres@127.0.0.1:55432/postgres`). It creates a uniquely named temporary database, installs an Auth/RLS test harness and the real migration, runs 19 scenarios, then drops only that temporary database. The database user needs CREATEDB and role-creation privileges. Never target production.
+`test:db` requires a local **isolated test** PostgreSQL server and `TEST_DATABASE_URL` (default `postgresql://postgres@127.0.0.1:55432/postgres`). It creates a uniquely named temporary database, installs an Auth/RLS test harness and the real migration, runs 23 scenarios, then drops only that temporary database. The database user needs CREATEDB and role-creation privileges. Never target production.
 
 Verified on PostgreSQL 18 locally: full migration, Whole/component conflicts in both directions, independent MAIN/roomstay coexistence, add-ons, same-day turnover, two concurrent requests, expiration, repeat submission, changed idempotent payload, required payment, expired confirmation conflict, cancellation release, maintenance blocks, date/weekend precedence, frontend/SQL pricing parity, anonymous and non-admin privacy, throttling, scheduled cleanup function. Six Vitest tests cover domain calculations and bilingual saved WhatsApp messages.
 

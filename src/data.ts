@@ -66,4 +66,8 @@ export const demoCatalog: Catalog = {
   rate_rules: [],
 };
 export const imageFor = (id: string) =>
-  id.startsWith("ROOM") ? "/images/bedroom.webp" : "/images/courtyard.webp";
+  id.startsWith("ROOM")
+    ? "/images/bedroom.webp"
+    : id === "MAIN"
+      ? "/images/living.webp"
+      : "/images/courtyard.webp";
