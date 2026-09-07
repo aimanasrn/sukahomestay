@@ -1,0 +1,10 @@
+# SUKA HOMESTAY design system
+
+Generated concepts: home-concept.png, property-concept.png, booking-admin-concept.png.
+The first concept governs the homepage: 88px ivory header, full-width 515px photographic hero, left white serif headline, subtle left forest overlay, floating ivory availability bar, then an editorial four-column accommodation introduction. Lower sections use the property concept's sage band, selectable main/studio diagram and comparison table. Booking/admin use the third concept's numbered stepper, outlined selection rows, ivory summary and restrained sidebar/table.
+
+Tokens: ivory #FAF7F2; forest #254B40; sage #A8B8A0; sand #E9DDCB; terracotta #C97956; charcoal #252A27. Playfair Display 400/500 for headings, DM Sans 400–700 for UI. Desktop gutters 5.2vw/max 1360px. Radius 8–12px. Lucide outline icons 18–22px/1.5 stroke. Solid forest CTA, underlined editorial links, subtle borders; no invented hero eyebrow. Mobile: collapsed nav, stacked search, single-column cards and booking fields, compact sticky booking total. Motion 180–350ms with reduced-motion override.
+
+Allowed first-viewport copy comes from the user's hero/nav/search labels and the home concept. Intentional corrections: concept mixed English card names into BM and invented example dates; implementation uses fully translated names and user-selectable current dates. Rates clearly marked sample. No generated concept claims about private entrances, guest capacity, tax, privacy, or facilities will be copied unless present in the brief. Browser demo notice is a functional disclosure required to prevent simulated bookings being mistaken for real requests. Diagram uses semantic selectable buttons and simple house icons rather than the concept's decorative architectural illustration.
+
+Standalone generated courtyard and bedroom assets are illustrative; all are explicitly labeled. Asset prompts: a warm tropical Malaysian ivory bungalow courtyard with sage shutters, rattan veranda and leafy frangipani, and a matching cream/sage bedroom with white linen. Built-in image generation used. No property photographs or facts claimed.
