@@ -144,17 +144,16 @@ export default function Home() {
               </span>
             </div>
             <small>{t("diagramNote")}</small>
-            {selected.length > 0 &&
-              (selected.includes("MAIN") || selected.length === 1) && (
-                <Link
-                  to="/book"
-                  className="text-link"
-                  onClick={() => setDraft({ resources: selected })}
-                >
-                  {t("book")}
-                  <ArrowRight size={18} />
-                </Link>
-              )}
+            {selected.length > 0 && (
+              <Link
+                to="/book"
+                className="text-link"
+                onClick={() => setDraft({ resources: selected })}
+              >
+                {t("book")}
+                <ArrowRight size={18} />
+              </Link>
+            )}
           </div>
         </div>
         <div className="section comparison-wrap">

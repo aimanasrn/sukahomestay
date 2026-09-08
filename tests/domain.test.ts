@@ -60,7 +60,7 @@ describe("inventory and pricing", () => {
         {
           check_in: "2027-01-01",
           check_out: "2027-01-02",
-          resources: ["ROOM_A", "ROOM_B"],
+          resources: [],
         },
         demoCatalog,
       ),

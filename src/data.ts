@@ -48,7 +48,7 @@ export const demoCatalog: Catalog = {
     },
   ],
   settings: {
-    whatsapp: "",
+    whatsapp: "60139498048",
     address: "",
     map_url: "",
     contact_email: "",

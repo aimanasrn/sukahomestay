@@ -21,6 +21,23 @@ const rows = [
   },
 ] as Allocation[];
 describe("availability calendar", () => {
+  it("MAIN leaves roomstays free; Whole House blocks every unit", () => {
+    const main = [{ ...rows[0], resource_id: "MAIN" }] as Allocation[];
+    expect(nightState("2026-10-13", ["MAIN"], main)).toBe("unavailable");
+    expect(nightState("2026-10-13", ["ROOM_A", "ROOM_B"], main)).toBe(
+      "available",
+    );
+    expect(nightState("2026-10-13", selectedResources("WHOLE"), main)).toBe(
+      "unavailable",
+    );
+    const whole = selectedResources("WHOLE").map((resource_id) => ({
+      ...rows[0],
+      resource_id,
+    }));
+    for (const resource of selectedResources("WHOLE")) {
+      expect(nightState("2026-10-13", [resource], whole)).toBe("unavailable");
+    }
+  });
   it("uses Malaysia midnight regardless of machine timezone", () => {
     expect(malaysiaDate(new Date("2026-10-01T15:59:59Z"))).toBe("2026-10-01");
     expect(malaysiaDate(new Date("2026-10-01T16:00:00Z"))).toBe("2026-10-02");

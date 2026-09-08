@@ -81,7 +81,7 @@ const en = {
   mainDesc:
     "Four bedrooms, three bathrooms, and space to be together. Includes a living room, dining area, and kitchen.",
   roomDesc:
-    "Your own studio-style accommodation, with one bedroom and one bathroom. Book Roomstay A, B, or C independently.",
+    "Your own studio-style accommodation, with one bedroom and one bathroom. Book Roomstay 1, 2, or 3 independently.",
   wholeDesc:
     "Bring everyone together. The main homestay and all three roomstays, reserved in one booking.",
   propertyEyebrow: "ONE PROPERTY, YOUR WAY",
@@ -103,7 +103,7 @@ const en = {
   notIncluded: "Not included",
   facilitiesTitle: "Room to slow down.",
   facilitiesDesc:
-    "Shared moments in the main homestay. Access to these spaces is included with the Main Homestay and Whole House bookings.",
+    "Shared moments in the main homestay. Access to these spaces is included with the Homestay Utama and Whole House bookings.",
   access:
     "Roomstays do not include access to the main home’s kitchen, living room, or dining area unless explicitly configured.",
   galleryEyebrow: "A FEEL FOR YOUR STAY",
@@ -122,7 +122,7 @@ const en = {
     "One physical property: a main homestay with 4 bedrooms and 3 bathrooms, plus three separate roomstay units with 1 bedroom and 1 bathroom each.",
   faq2: "Can I book a roomstay on its own?",
   faqA2:
-    "Yes. Roomstay A, B, and C can each be booked independently. Access to the main home’s kitchen, dining area, and living room is not included unless specified.",
+    "Yes. Roomstay 1, 2, and 3 can each be booked independently. Access to the main home’s kitchen, dining area, and living room is not included unless specified.",
   faq3: "What does the Whole House include?",
   faqA3:
     "The main homestay and all three roomstays: 7 bedrooms and 6 bathrooms, plus the living room, dining area, and kitchen.",
@@ -298,7 +298,7 @@ const en = {
     "Record a verified manual payment before confirmation. Expired bookings are checked for conflicts again.",
   INVALID_DATES: "Choose a valid future stay of 1–60 nights.",
   INVALID_RESOURCES:
-    "Choose one roomstay, or the main homestay with optional roomstays.",
+    "Choose one or more units, or Whole House for all units.",
   INVALID_CUSTOMER: "Please check your name, phone, email, and guest numbers.",
   POLICY_REQUIRED: "Please read and accept the current booking policies.",
   BOOKING_NOT_CONFIGURED:
@@ -404,7 +404,7 @@ const ms: Record<Key, string> = {
   mainDesc:
     "Empat bilik tidur, tiga bilik air dan ruang untuk bersama. Termasuk ruang tamu, ruang makan dan dapur.",
   roomDesc:
-    "Penginapan gaya studio dengan satu bilik tidur dan satu bilik air. Tempah Roomstay A, B atau C secara berasingan.",
+    "Penginapan gaya studio dengan satu bilik tidur dan satu bilik air. Tempah Roomstay 1, 2 atau 3 secara berasingan.",
   wholeDesc:
     "Bawa semua orang bersama. Homestay utama dan ketiga-tiga roomstay dalam satu tempahan.",
   propertyEyebrow: "SATU KAWASAN, PILIHAN ANDA",
@@ -445,7 +445,7 @@ const ms: Record<Key, string> = {
     "Satu hartanah fizikal: homestay utama dengan 4 bilik tidur dan 3 bilik air, serta tiga roomstay berasingan dengan 1 bilik tidur dan 1 bilik air setiap satu.",
   faq2: "Boleh tempah roomstay sahaja?",
   faqA2:
-    "Ya. Roomstay A, B dan C boleh ditempah secara berasingan. Akses ke dapur, ruang makan dan ruang tamu rumah utama tidak termasuk melainkan dinyatakan.",
+    "Ya. Roomstay 1, 2 dan 3 boleh ditempah secara berasingan. Akses ke dapur, ruang makan dan ruang tamu rumah utama tidak termasuk melainkan dinyatakan.",
   faq3: "Apa yang termasuk dalam Seluruh Rumah?",
   faqA3:
     "Homestay utama dan ketiga-tiga roomstay: 7 bilik tidur dan 6 bilik air, serta ruang tamu, ruang makan dan dapur.",
@@ -624,7 +624,7 @@ const ms: Record<Key, string> = {
   INVALID_DATES:
     "Pilih tarikh penginapan akan datang yang sah, antara 1–60 malam.",
   INVALID_RESOURCES:
-    "Pilih satu roomstay, atau homestay utama dengan roomstay tambahan.",
+    "Pilih satu atau beberapa unit, atau Seluruh Rumah untuk semua unit.",
   INVALID_CUSTOMER: "Sila semak nama, telefon, e-mel dan bilangan tetamu.",
   POLICY_REQUIRED: "Sila baca dan terima polisi tempahan terkini.",
   BOOKING_NOT_CONFIGURED:

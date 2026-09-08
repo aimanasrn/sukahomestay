@@ -32,7 +32,9 @@ Use the demo dashboard's **Kosongkan tempahan demo / Clear demo bookings** butto
 
 The main homestay has 4 bedrooms, 3 bathrooms, a living room, dining area and kitchen. Each roomstay has 1 bedroom and 1 bathroom. Whole House includes all four resources: 7 bedrooms and 6 bathrooms.
 
-**Not supplied and intentionally blank:** verified photos, address/map link, WhatsApp number, email, all guest capacities, check-in/out times, house rules and booking policies. Roomstay amenities are empty by default; no kitchen or main-home access is assumed. Admin can enter additional facilities as one `BM | EN` pair per line.
+**Owner-supplied WhatsApp:** 013-949 8048 (`60139498048` for WhatsApp links). Included in the default demo settings; enter this number in the hosted admin settings when configuring production.
+
+**Not supplied and intentionally blank:** verified photos, address/map link, email, all guest capacities, check-in/out times, house rules and booking policies. Roomstay amenities are empty by default; no kitchen or main-home access is assumed. Admin can enter additional facilities as one `BM | EN` pair per line.
 
 **Sample rates only:** Main RM450/night, each roomstay RM150/night, main-home roomstay add-on RM120/night, Whole House RM800/night. Weekend/date rates are initially unset. Cleaning and deposit default to zero (disabled). The 120-minute hold is an editable implementation default, not a published property policy. Live booking requests start disabled. All generated imagery is identified as illustrative, not actual photography. Replace photos using the admin photo URL controls; upload verified images to a CDN or Supabase Storage, then paste their HTTPS URLs. No fake reviews are included.
 
@@ -101,6 +103,8 @@ Verified on PostgreSQL 18 locally: full migration, Whole/component conflicts in 
 The in-app browser was used for desktop/mobile rendering and customer → language switch → add-on → details → request → copy-message → admin → payment → confirmation → filters verification. Browser tests use fictional local demo records only. A reusable Playwright suite is also supplied as `npm run test:e2e` (requires `npx playwright install chromium`); its automated runner is separate from the in-app browser verification.
 
 ## Build and deploy the frontend
+
+Local booking testing is authorized at `http://127.0.0.1:5173` in `booking-api`, alongside the production `ALLOWED_ORIGIN`. CORS returns only the matched origin, and Turnstile's verified hostname must match that request origin. Remove the explicit local origin from `allowedOrigins` when local testing is finished. Hosted booking requests were enabled with bilingual general admin-confirmation policies (version 2).
 
 ```sh
 npm run build

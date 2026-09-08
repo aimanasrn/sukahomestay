@@ -1042,6 +1042,9 @@ footer {
   border-color: var(--border);
 }
 .modal {
+  position: fixed;
+  inset: 0;
+  margin: auto;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--background);
@@ -1049,6 +1052,8 @@ footer {
   max-width: 680px;
   width: calc(100% - 32px);
   max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
   color: var(--text-body);
   box-shadow: var(--shadow-dialog);
 }

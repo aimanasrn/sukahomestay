@@ -176,6 +176,11 @@ export default function BookingCalendar({
   return (
     <section className="availability-booking">
       <h2>{t("stayStepTitle")}</h2>
+      <p>
+        {lang === "ms"
+          ? "Pilih satu atau beberapa unit. Klik unit yang dipilih untuk membuangnya. Seluruh Rumah merangkumi semua unit."
+          : "Select one or more units. Click a selected unit to remove it. Whole House includes every unit."}
+      </p>
       <div
         className="calendar-accommodations"
         role="group"
@@ -191,11 +196,29 @@ export default function BookingCalendar({
             <button
               type="button"
               key={a.id}
-              aria-pressed={canonicalPackage(draft.resources) === a.id}
-              className={
-                canonicalPackage(draft.resources) === a.id ? "active" : ""
+              aria-pressed={
+                a.id === "WHOLE"
+                  ? draft.resources.length === 4
+                  : draft.resources.includes(a.id)
               }
-              onClick={() => changeResources(selectedResources(a.id))}
+              className={
+                (
+                  a.id === "WHOLE"
+                    ? draft.resources.length === 4
+                    : draft.resources.includes(a.id)
+                )
+                  ? "active"
+                  : ""
+              }
+              onClick={() => {
+                if (a.id === "WHOLE")
+                  return changeResources(selectedResources("WHOLE"));
+                const id = a.id as Resource;
+                const next = draft.resources.includes(id)
+                  ? draft.resources.filter((r) => r !== id)
+                  : [...draft.resources, id];
+                if (next.length) changeResources(next);
+              }}
             >
               <strong>{names[a.id][lang]}</strong>
               <Counts bedrooms={a.bedrooms} bathrooms={a.bathrooms} />
@@ -483,15 +506,11 @@ export default function BookingCalendar({
         </div>
         <aside className="calendar-summary">
           <h3>{t("summary")}</h3>
-          <h4>{names[canonicalPackage(draft.resources)][lang]}</h4>
-          {draft.resources.includes("MAIN") && draft.resources.length > 1 && (
-            <p>
-              {draft.resources
-                .filter((r) => r !== "MAIN")
-                .map((r) => names[r][lang])
-                .join(" + ")}
-            </p>
-          )}
+          <h4>
+            {draft.resources.length === 4
+              ? names.WHOLE[lang]
+              : draft.resources.map((r) => names[r][lang]).join(" + ")}
+          </h4>
           <Counts
             bedrooms={draft.resources.reduce(
               (n, r) => n + (r === "MAIN" ? 4 : 1),

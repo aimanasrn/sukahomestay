@@ -114,7 +114,7 @@ export default function ManualBooking({
             ))}
           </select>
         </Field>
-        {input.resources.includes("MAIN") && (
+        {
           <fieldset className="manual-resources">
             <legend>{t("stepAdd")}</legend>
             {resources
@@ -124,6 +124,10 @@ export default function ManualBooking({
                   <input
                     type="checkbox"
                     checked={input.resources.includes(r)}
+                    disabled={
+                      input.resources.length === 1 &&
+                      input.resources.includes(r)
+                    }
                     onChange={(e) =>
                       setInput({
                         ...input,
@@ -137,7 +141,7 @@ export default function ManualBooking({
                 </label>
               ))}
           </fieldset>
-        )}
+        }
         <div className="form-grid">
           <Field label={t("checkIn")}>
             <input

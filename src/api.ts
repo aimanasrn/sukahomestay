@@ -313,12 +313,19 @@ export async function adminAction(payload: Record<string, unknown>) {
         throw new Error("INVALID_STATUS");
       if (b.paid_sen < (b.quote.deposit_sen || b.quote.total_sen))
         throw new Error("PAYMENT_REQUIRED");
-      const busy = await availability(b.check_in, b.check_out);
-      if (
-        busy.some(
-          (a) => a.booking_id !== b.id && b.resources.includes(a.resource_id),
-        )
-      )
+      const otherBookingBusy = list.some(
+        (other) =>
+          other.id !== b.id &&
+          ["pending", "confirmed"].includes(other.status) &&
+          overlaps(b.check_in, b.check_out, other.check_in, other.check_out) &&
+          other.resources.some((resource) => b.resources.includes(resource)),
+      );
+      const blockBusy = blocks.some(
+        (block) =>
+          b.resources.includes(block.resource_id) &&
+          overlaps(b.check_in, b.check_out, block.check_in, block.check_out),
+      );
+      if (otherBookingBusy || blockBusy)
         throw new Error("UNAVAILABLE");
       b.status = "confirmed";
     }

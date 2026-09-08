@@ -415,7 +415,7 @@ function BookingsPanel({ overview }: { overview: boolean }) {
                   </td>
                   <td>
                     {names[b.quote.package_id][lang]}
-                    <small>{b.resources.join(" + ")}</small>
+                    <small>{b.resources.map((r) => names[r][lang]).join(" + ")}</small>
                   </td>
                   <td>
                     {money(b.quote.total_sen, lang)}
@@ -701,7 +701,7 @@ function ResourceCalendar({ compact = false }: { compact?: boolean }) {
           <tbody>
             {resources.map((r) => (
               <tr key={r}>
-                <th>{r}</th>
+                <th>{names[r][lang]}</th>
                 {days.map((d) => {
                   const a = alloc.find(
                     (a) =>
@@ -770,7 +770,7 @@ function ResourceCalendar({ compact = false }: { compact?: boolean }) {
                 onChange={(e) => setResource(e.target.value)}
               >
                 {resources.map((r) => (
-                  <option key={r}>{r}</option>
+                  <option key={r} value={r}>{names[r][lang]}</option>
                 ))}
               </select>
             </Field>

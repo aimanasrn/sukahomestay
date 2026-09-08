@@ -26,6 +26,7 @@ import {
   names,
   overlaps,
   selectedResources,
+  whatsappEnquiry,
   type Accommodation,
   type Allocation,
   type PackageId,
@@ -395,10 +396,9 @@ export function PriceSummary({
         className="summary-photo"
       />
       <h4>
-        {names[quote.package_id][lang]}
-        {quote.package_id === "MAIN" && draft.resources.length > 1
-          ? ` + ${draft.resources.length - 1} Roomstay`
-          : ""}
+        {quote.package_id === "WHOLE"
+          ? names.WHOLE[lang]
+          : draft.resources.map((r) => names[r][lang]).join(" + ")}
       </h4>
       <p className="summary-date">
         <CalendarDays size={16} />
@@ -617,9 +617,29 @@ export function Modal({
   );
 }
 export function WhatsApp() {
-  const { t } = useLanguage();
-  const { catalog } = useApp();
+  const { t, lang } = useLanguage();
+  const { catalog, draft } = useApp();
+  const location = useLocation();
   const [open, setOpen] = useState(false);
+  const stay = location.pathname.match(
+    /^\/stay\/(MAIN|ROOM_A|ROOM_B|ROOM_C|WHOLE)$/,
+  )?.[1] as PackageId | undefined;
+  const message = whatsappEnquiry(
+    stay ? { ...draft, resources: selectedResources(stay) } : draft,
+    lang,
+  );
+  if (catalog.settings.whatsapp)
+    return (
+      <a
+        className="whatsapp-float"
+        aria-label={t("whatsapp")}
+        href={`https://wa.me/${catalog.settings.whatsapp}?text=${encodeURIComponent(message)}`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        <MessageCircle size={25} />
+      </a>
+    );
   return (
     <>
       <button

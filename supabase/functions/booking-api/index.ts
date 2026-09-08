@@ -1,6 +1,8 @@
 import { createClient } from "npm:@supabase/supabase-js@2.115.0";
 
 const origin = Deno.env.get("ALLOWED_ORIGIN") || "";
+// Explicitly authorized local booking testing; never use a wildcard origin.
+const allowedOrigins = new Set([origin, "http://127.0.0.1:5173"].filter(Boolean));
 const url = Deno.env.get("SUPABASE_URL")!;
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const db = createClient(url, serviceKey, {
@@ -14,11 +16,6 @@ const cors = {
   Vary: "Origin",
   "Cache-Control": "no-store",
 };
-const response = (data: unknown, status = 200) =>
-  new Response(JSON.stringify(data), {
-    status,
-    headers: { ...cors, "Content-Type": "application/json" },
-  });
 const allowedErrors = [
   "INVALID_DATES",
   "INVALID_RESOURCES",
@@ -37,10 +34,21 @@ const allowedErrors = [
   "INVALID_INPUT",
 ];
 Deno.serve(async (req: Request) => {
-  if (!origin || req.headers.get("origin") !== origin)
+  const requestOrigin = req.headers.get("origin") || "";
+  const allowed = !!origin && allowedOrigins.has(requestOrigin);
+  const requestCors = {
+    ...cors,
+    "Access-Control-Allow-Origin": allowed ? requestOrigin : origin,
+  };
+  const response = (data: unknown, status = 200) =>
+    new Response(JSON.stringify(data), {
+      status,
+      headers: { ...requestCors, "Content-Type": "application/json" },
+    });
+  if (!allowed)
     return response({ error: "FORBIDDEN" }, 403);
   if (req.method === "OPTIONS")
-    return new Response(null, { status: 204, headers: cors });
+    return new Response(null, { status: 204, headers: requestCors });
   if (req.method !== "POST")
     return response({ error: "METHOD_NOT_ALLOWED" }, 405);
   try {
@@ -64,7 +72,7 @@ Deno.serve(async (req: Request) => {
         },
       );
       const verified = await verify.json();
-      if (!verified.success || verified.hostname !== new URL(origin).hostname)
+      if (!verified.success || verified.hostname !== new URL(requestOrigin).hostname)
         return response({ error: "CAPTCHA_REQUIRED" }, 400);
       const hash = await crypto.subtle.digest(
         "SHA-256",
