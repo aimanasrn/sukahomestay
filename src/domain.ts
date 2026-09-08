@@ -95,6 +95,8 @@ export interface Allocation {
   kind: "booking" | "maintenance" | "owner";
   booking_id?: string;
   label?: string;
+  state?: "pending" | "unavailable";
+  expires_at?: string | null;
 }
 export const names: Record<PackageId, Record<Lang, string>> = {
   MAIN: { ms: "Homestay Utama", en: "Main Homestay" },
@@ -119,10 +121,23 @@ export function overlaps(a: string, b: string, c: string, d: string) {
 export function nightsBetween(a: string, b: string) {
   return Math.round((Date.parse(b) - Date.parse(a)) / 86400000);
 }
+export function malaysiaDate(now = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kuala_Lumpur",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now);
+  const get = (type: string) => parts.find((p) => p.type === type)!.value;
+  return `${get("year")}-${get("month")}-${get("day")}`;
+}
+export function addDays(day: string, days: number) {
+  const date = new Date(`${day}T12:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
 export function dateAfter(days = 0) {
-  const now = new Date();
-  now.setDate(now.getDate() + days);
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  return addDays(malaysiaDate(), days);
 }
 export function money(sen: number, lang: Lang = "ms") {
   return new Intl.NumberFormat(lang === "ms" ? "ms-MY" : "en-MY", {
@@ -143,7 +158,14 @@ export function calculateQuote(
   catalog: Catalog,
 ): Quote {
   const nights = nightsBetween(input.check_in, input.check_out);
-  if (nights < 1 || nights > 60) throw new Error("INVALID_DATES");
+  if (
+    !input.check_in ||
+    !input.check_out ||
+    !Number.isFinite(nights) ||
+    nights < 1 ||
+    nights > 60
+  )
+    throw new Error("INVALID_DATES");
   const ids = [...new Set(input.resources)];
   if (
     !ids.length ||

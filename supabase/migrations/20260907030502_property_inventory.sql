@@ -1,3 +1,18 @@
+-- Upgrade the empty legacy schema without deleting its tables or configuration.
+-- Refuse automatic conversion if customer records exist; that requires a mapped data migration.
+do $$ declare fn record; begin
+ if exists(select 1 from information_schema.columns where table_schema='public' and table_name='bookings' and column_name='booking_number') then
+  if exists(select 1 from public.bookings) or exists(select 1 from public.payments) or exists(select 1 from public.blocked_dates) then raise exception 'LEGACY_DATA_REQUIRES_MIGRATION'; end if;
+  create schema if not exists legacy_suka;
+  revoke all on schema legacy_suka from public,anon,authenticated;
+  alter table public.payments set schema legacy_suka;
+  alter table public.bookings set schema legacy_suka;
+  for fn in select p.oid::regprocedure as signature from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname in ('create_booking_request','get_booked_units_for_dates','get_locked_dates','is_unit_available') loop
+   execute format('revoke execute on function %s from public,anon,authenticated,service_role',fn.signature);
+  end loop;
+ end if;
+end $$;
+
 -- Four physical resources. WHOLE is a package, never an independent resource.
 create extension if not exists btree_gist;
 create schema if not exists private;

@@ -42,7 +42,11 @@ export function Logo() {
           stroke="currentColor"
           strokeWidth="1.4"
         />
-        <path d="M22 23a7 7 0 0 1 12 0" stroke="#C97956" strokeWidth="1.5" />
+        <path
+          d="M22 23a7 7 0 0 1 12 0"
+          stroke="var(--primary)"
+          strokeWidth="1.5"
+        />
       </svg>
       <span>
         SUKA <span>HOMESTAY</span>
@@ -78,10 +82,46 @@ export function Header() {
         className={open ? "navigation open" : "navigation"}
         aria-label={t("stays")}
       >
-        <Link to="/#stays">{t("stays")}</Link>
-        <Link to="/#spaces">{t("spaces")}</Link>
-        <Link to="/#gallery">{t("gallery")}</Link>
-        <Link to="/#location">{t("location")}</Link>
+        <Link
+          to="/#stays"
+          aria-current={
+            location.pathname === "/" && location.hash === "#stays"
+              ? "location"
+              : undefined
+          }
+        >
+          {t("stays")}
+        </Link>
+        <Link
+          to="/#spaces"
+          aria-current={
+            location.pathname === "/" && location.hash === "#spaces"
+              ? "location"
+              : undefined
+          }
+        >
+          {t("spaces")}
+        </Link>
+        <Link
+          to="/#gallery"
+          aria-current={
+            location.pathname === "/" && location.hash === "#gallery"
+              ? "location"
+              : undefined
+          }
+        >
+          {t("gallery")}
+        </Link>
+        <Link
+          to="/#location"
+          aria-current={
+            location.pathname === "/" && location.hash === "#location"
+              ? "location"
+              : undefined
+          }
+        >
+          {t("location")}
+        </Link>
       </nav>
       <div className="header-actions">
         <LanguageSwitch />
@@ -406,7 +446,7 @@ export function PriceSummary({
 }
 export function AvailabilityCalendar({ ids }: { ids: Resource[] }) {
   const { t, lang } = useLanguage();
-  const { setDraft } = useApp();
+  const { draft, setDraft } = useApp();
   const [month, setMonth] = useState(
     () => new Date(new Date().getFullYear(), new Date().getMonth(), 1),
   );
@@ -496,7 +536,22 @@ export function AvailabilityCalendar({ ids }: { ids: Resource[] }) {
                 <button
                   key={d}
                   disabled={d < dateAfter() || blocked}
-                  className={start === d ? "selected" : ""}
+                  className={
+                    start
+                      ? start === d
+                        ? "selected"
+                        : ""
+                      : d === draft.check_in || d === draft.check_out
+                        ? "selected"
+                        : d > draft.check_in && d < draft.check_out
+                          ? "in-range"
+                          : ""
+                  }
+                  aria-pressed={
+                    start
+                      ? start === d
+                      : d === draft.check_in || d === draft.check_out
+                  }
                   aria-label={`${formatDate(d, lang)} ${blocked ? t("unavailable") : t("available")}`}
                   onClick={() => {
                     if (!start || d <= start) {

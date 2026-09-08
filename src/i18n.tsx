@@ -7,6 +7,45 @@ import {
 } from "react";
 import type { Lang } from "./domain";
 const en = {
+  calendarIntro:
+    "Choose available dates on the calendar to start your booking.",
+  continueBooking: "Continue Booking",
+  clearDates: "Clear dates",
+  calendarPending: "Pending",
+  calendarUnavailable: "Unavailable",
+  selectedDates: "Selected Dates",
+  chooseCheckout:
+    "Choose your check-out date. Marked boundary dates are checkout only.",
+  checkoutOnly: "Check-out only",
+  pastDate: "Past date",
+  calendarHelp:
+    "Choose check-in, then check-out. Use arrow keys to move between dates; Enter or Space selects. Stays may be up to 60 nights.",
+  AVAILABILITY_FAILED:
+    "Availability could not be loaded. Dates are disabled until a successful retry.",
+  RANGE_BLOCKED:
+    "These dates include an unavailable night. Please choose another stay; your guest details are kept.",
+  noDatesMonth:
+    "No check-in dates are available in this view. Try another month or accommodation.",
+  addonUnavailable: "Unavailable for your selected dates",
+  chooseDatesFirst: "Choose dates to check this add-on.",
+  noHoldYet:
+    "Selecting dates does not reserve inventory. Availability is checked again before your request is saved.",
+  manualBooking: "Add manual booking",
+  manualSource:
+    "Record a reservation received through WhatsApp or phone. Payment status is calculated from the amount recorded.",
+  manualAccepted:
+    "I have confirmed the booking details and policy acceptance with the guest.",
+  initialStatus: "Booking status",
+  initialPayment: "Payment status",
+  manualAmount: "Payment received (RM)",
+  manualReference: "Payment reference",
+  datesAndStay: "Accommodation & dates",
+  changeDates: "Change accommodation or dates",
+  calendarSelected: "Selected",
+  rangeChanged:
+    "Availability changed. Please review or clear your dates before continuing.",
+  retryAvailability: "Retry availability",
+
   clearDemo: "Clear demo bookings",
   stays: "Accommodation",
   spaces: "Spaces & facilities",
@@ -291,6 +330,45 @@ const en = {
 type Key = keyof typeof en;
 const ms: Record<Key, string> = {
   ...en,
+  calendarIntro:
+    "Pilih tarikh yang tersedia pada kalendar untuk mula membuat tempahan.",
+  continueBooking: "Teruskan Tempahan",
+  clearDates: "Kosongkan tarikh",
+  calendarPending: "Dalam Proses",
+  calendarUnavailable: "Tidak Tersedia",
+  selectedDates: "Tarikh Dipilih",
+  chooseCheckout:
+    "Pilih tarikh keluar. Tarikh sempadan yang ditanda hanya untuk daftar keluar.",
+  checkoutOnly: "Daftar keluar sahaja",
+  pastDate: "Tarikh lepas",
+  calendarHelp:
+    "Pilih tarikh masuk, kemudian tarikh keluar. Gunakan kekunci anak panah untuk bergerak; Enter atau Space untuk memilih. Maksimum 60 malam.",
+  AVAILABILITY_FAILED:
+    "Ketersediaan tidak dapat dimuatkan. Tarikh dinyahaktifkan sehingga cubaan semula berjaya.",
+  RANGE_BLOCKED:
+    "Julat ini merangkumi malam yang tidak tersedia. Sila pilih tarikh lain; maklumat tetamu anda dikekalkan.",
+  noDatesMonth:
+    "Tiada tarikh masuk yang tersedia dalam paparan ini. Cuba bulan atau penginapan lain.",
+  addonUnavailable: "Tidak tersedia untuk tarikh pilihan anda",
+  chooseDatesFirst: "Pilih tarikh untuk menyemak tambahan ini.",
+  noHoldYet:
+    "Memilih tarikh tidak menempah ruang. Ketersediaan disemak semula sebelum permintaan disimpan.",
+  manualBooking: "Tambah tempahan manual",
+  manualSource:
+    "Rekod tempahan yang diterima melalui WhatsApp atau telefon. Status bayaran dikira berdasarkan jumlah yang direkodkan.",
+  manualAccepted:
+    "Saya telah mengesahkan butiran tempahan dan penerimaan polisi dengan tetamu.",
+  initialStatus: "Status tempahan",
+  initialPayment: "Status bayaran",
+  manualAmount: "Bayaran diterima (RM)",
+  manualReference: "Rujukan bayaran",
+  datesAndStay: "Penginapan & tarikh",
+  changeDates: "Tukar penginapan atau tarikh",
+  calendarSelected: "Dipilih",
+  rangeChanged:
+    "Ketersediaan telah berubah. Semak atau kosongkan tarikh sebelum meneruskan.",
+  retryAvailability: "Cuba semula ketersediaan",
+
   clearDemo: "Kosongkan tempahan demo",
   stays: "Penginapan",
   spaces: "Ruang & Kemudahan",

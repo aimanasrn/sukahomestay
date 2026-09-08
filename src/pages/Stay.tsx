@@ -31,6 +31,11 @@ export default function Stay() {
   }, [id]);
   useEffect(() => {
     if (!a) return;
+    if (!draft.check_in || !draft.check_out) {
+      setQuote(null);
+      setError("");
+      return;
+    }
     let active = true;
     setError("");
     getQuote({ ...draft, resources: selectedResources(a.id) }, catalog)

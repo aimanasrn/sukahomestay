@@ -30,8 +30,10 @@ const read = <T>(key: string, fallback: T): T => {
     return fallback;
   }
 };
-const write = (key: string, value: unknown) =>
+const write = (key: string, value: unknown) => {
   localStorage.setItem(`suka.${key}`, JSON.stringify(value));
+  window.dispatchEvent(new Event("suka:availability"));
+};
 function demoBookings() {
   const list = read<Booking[]>("bookings", []);
   const clean = list.map((b) =>
@@ -39,7 +41,8 @@ function demoBookings() {
       ? { ...b, status: "expired" as const }
       : b,
   );
-  write("bookings", clean);
+  if (clean.some((b, i) => b.status !== list[i].status))
+    write("bookings", clean);
   return clean;
 }
 const fail = (error: unknown) => {
@@ -92,8 +95,12 @@ export async function availability(
   ci: string,
   co: string,
 ): Promise<Allocation[]> {
+  if (!isDemo && !supabase) throw new Error("BOOKING_NOT_CONFIGURED");
   if (!supabase) {
-    const blocked = read<Allocation[]>("blocks", []);
+    const blocked = read<Allocation[]>("blocks", []).map((a) => ({
+      ...a,
+      state: "unavailable" as const,
+    }));
     const alloc = demoBookings()
       .filter((b) => ["pending", "confirmed"].includes(b.status))
       .flatMap((b) =>
@@ -104,11 +111,22 @@ export async function availability(
           check_in: b.check_in,
           check_out: b.check_out,
           kind: "booking" as const,
+          state:
+            b.status === "pending"
+              ? ("pending" as const)
+              : ("unavailable" as const),
+          expires_at: b.status === "pending" ? b.expires_at : null,
         })),
       );
-    return [...blocked, ...alloc].filter((a) =>
-      overlaps(ci, co, a.check_in, a.check_out),
-    );
+    return [...blocked, ...alloc]
+      .filter((a) => overlaps(ci, co, a.check_in, a.check_out))
+      .map((a) => ({
+        resource_id: a.resource_id,
+        check_in: a.check_in < ci ? ci : a.check_in,
+        check_out: a.check_out > co ? co : a.check_out,
+        state: a.state,
+        expires_at: "expires_at" in a ? a.expires_at : null,
+      })) as Allocation[];
   }
   const { data, error } = await supabase.rpc("get_availability", { ci, co });
   fail(error);
@@ -205,6 +223,67 @@ export async function adminAction(payload: Record<string, unknown>) {
   if (supabase) return edge({ action: "admin", payload });
   const run = async () => {
     const action = String(payload.action);
+    if (action === "create_manual") {
+      const p = payload.booking as BookingInput & {
+        status: Booking["status"];
+        paid_sen: number;
+        payment_reference: string;
+      };
+      validateCustomer(p);
+      if (!["pending", "confirmed", "cancelled", "rejected"].includes(p.status))
+        throw new Error("INVALID_STATUS");
+      const list = demoBookings();
+      const existing = list.find(
+        (b) => b.idempotency_key === p.idempotency_key,
+      );
+      if (existing) return existing;
+      const c = await getCatalog();
+      if (p.check_in < dateAfter() || !p.check_in || !p.check_out)
+        throw new Error("INVALID_DATES");
+      const q = calculateQuote(p, c);
+      if (!canFit(p.resources, p.adults + p.children, c))
+        throw new Error("CAPACITY_EXCEEDED");
+      if (
+        !Number.isInteger(p.paid_sen) ||
+        p.paid_sen < 0 ||
+        p.paid_sen > q.total_sen ||
+        (p.paid_sen > 0 && !p.payment_reference.trim())
+      )
+        throw new Error("INVALID_PAYMENT");
+      if (
+        p.status === "confirmed" &&
+        p.paid_sen < (q.deposit_sen || q.total_sen)
+      )
+        throw new Error("PAYMENT_REQUIRED");
+      if (
+        ["pending", "confirmed"].includes(p.status) &&
+        (await availability(p.check_in, p.check_out)).some((a) =>
+          p.resources.includes(a.resource_id),
+        )
+      )
+        throw new Error("UNAVAILABLE");
+      const id = crypto.randomUUID();
+      const b: Booking = {
+        ...p,
+        id,
+        reference: `DEMO-${id.slice(0, 8).toUpperCase()}`,
+        quote: q,
+        payment_status:
+          p.paid_sen === 0
+            ? "unpaid"
+            : p.paid_sen === q.total_sen
+              ? "paid"
+              : "partially_paid",
+        created_at: new Date().toISOString(),
+        expires_at: new Date(
+          Date.now() + c.settings.hold_minutes * 60000,
+        ).toISOString(),
+        notes: "",
+        whatsapp: c.settings.whatsapp,
+      };
+      write("bookings", [b, ...list]);
+      return b;
+    }
     const blocks = read<Allocation[]>("blocks", []);
     if (action === "block") {
       if (
@@ -294,10 +373,16 @@ export async function adminAllocations() {
     ];
   const { data, error } = await supabase
     .from("booking_allocations")
-    .select("*")
+    .select("*, bookings(status,expires_at)")
     .eq("active", true);
   fail(error);
-  return data as Allocation[];
+  return (data ?? []).filter(
+    (a) =>
+      !a.booking_id ||
+      a.bookings?.status === "confirmed" ||
+      (a.bookings?.status === "pending" &&
+        Date.parse(a.bookings.expires_at) > Date.now()),
+  ) as Allocation[];
 }
 export async function saveSettings(settings: Settings) {
   if (settings.whatsapp && !/^\d{8,15}$/.test(settings.whatsapp))
@@ -390,8 +475,8 @@ export async function updateRate(
   fail(result.error);
 }
 export const defaultBooking = (): BookingInput => ({
-  check_in: dateAfter(1),
-  check_out: dateAfter(3),
+  check_in: "",
+  check_out: "",
   resources: ["MAIN"],
   adults: 2,
   children: 0,

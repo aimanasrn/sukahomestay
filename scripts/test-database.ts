@@ -56,12 +56,13 @@ try {
   await client.query(
     `do $$ begin if not exists(select 1 from pg_roles where rolname='anon') then create role anon nologin; end if; if not exists(select 1 from pg_roles where rolname='authenticated') then create role authenticated nologin; end if; if not exists(select 1 from pg_roles where rolname='service_role') then create role service_role nologin bypassrls; end if; end $$; create schema auth; create table auth.users(id uuid primary key); create function auth.uid() returns uuid language sql as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$; grant usage on schema auth to anon,authenticated,service_role; grant execute on function auth.uid() to anon,authenticated,service_role;`,
   );
-  const migration = (await fs.readdir("supabase/migrations")).find((n) =>
-    n.endsWith("_property_inventory.sql"),
-  )!;
-  await client.query(
-    await fs.readFile(`supabase/migrations/${migration}`, "utf8"),
-  );
+  for (const migration of (await fs.readdir("supabase/migrations"))
+    .filter((n) => n.endsWith(".sql"))
+    .sort()) {
+    await client.query(
+      await fs.readFile(`supabase/migrations/${migration}`, "utf8"),
+    );
+  }
   ok("migration applies on real PostgreSQL");
   await client.query(
     `update public.property_settings set booking_enabled=true,whatsapp='60123456789',policies='{"ms":"Polisi ujian sahaja.","en":"Test policies only."}'; update public.accommodation_packages set capacity=case when id='WHOLE' then 20 when id='MAIN' then 12 else 3 end;`,
@@ -234,7 +235,8 @@ try {
   assert(
     publicData.every(
       (a: object) =>
-        Object.keys(a).sort().join(",") === "check_in,check_out,resource_id",
+        Object.keys(a).sort().join(",") ===
+        "check_in,check_out,expires_at,resource_id,state",
     ),
   );
   await client.query("reset role");
@@ -362,6 +364,165 @@ try {
     "refunded",
   );
   ok("Payment idempotency and refund balance are separate from booking status");
+
+  const manualInput = {
+    ...input(["MAIN", "ROOM_B"], 40, 43),
+    status: "pending",
+    paid_sen: 0,
+    payment_reference: "",
+  };
+  const manual = async (p: typeof manualInput, c = client) =>
+    (
+      await c.query("select public.admin_create_booking($1,$2) as b", [
+        actor,
+        p,
+      ])
+    ).rows[0].b;
+  await client.query("set role anon");
+  await rejects(() => manual(manualInput), /permission denied/);
+  await rejects(
+    () => client.query("update public.availability_revision set revision=0"),
+    /permission denied/,
+  );
+  assert.equal(
+    (await client.query("select * from public.availability_revision")).rowCount,
+    1,
+  );
+  await client.query("reset role");
+  await rejects(
+    () =>
+      client.query("select public.admin_create_booking($1,$2)", [
+        randomUUID(),
+        manualInput,
+      ]),
+    /FORBIDDEN/,
+  );
+  ok("Manual booking and revision writes deny guests and non-admins");
+  await client.query("set role service_role");
+  const m = await manual(manualInput);
+  assert.equal((await manual(manualInput)).id, m.id);
+  await rejects(
+    () => manual({ ...manualInput, name: "Other" }),
+    /IDEMPOTENCY_MISMATCH/,
+  );
+  const projected = (
+    await client.query("select public.get_availability($1,$2) as a", [
+      date(41),
+      date(42),
+    ])
+  ).rows[0].a;
+  assert.equal(projected.length, 2);
+  assert(
+    projected.every(
+      (a: any) =>
+        a.state === "pending" &&
+        a.expires_at &&
+        a.check_in === date(41) &&
+        a.check_out === date(42),
+    ),
+  );
+  await rejects(
+    () => submit(input(["MAIN", "ROOM_A", "ROOM_B", "ROOM_C"], 41, 42)),
+    /conflicting key|exclusion/,
+  );
+  await submit(input(["ROOM_A"], 41, 42));
+  ok(
+    "Manual pending add-ons project safe clipped dates and share guest conflicts",
+  );
+  await rejects(
+    () =>
+      manual({
+        ...manualInput,
+        idempotency_key: randomUUID(),
+        check_in: date(44),
+        check_out: date(45),
+        status: "confirmed",
+      }),
+    /PAYMENT_REQUIRED/,
+  );
+  assert.equal(
+    (
+      await client.query(
+        "select count(*)::int as n from public.bookings where check_in=$1",
+        [date(44)],
+      )
+    ).rows[0].n,
+    0,
+  );
+  ok("Failed manual confirmation rolls back booking and allocation atomically");
+  const q = (
+    await client.query("select public.get_quote($1) as q", [
+      { ...manualInput, check_in: date(44), check_out: date(46) },
+    ])
+  ).rows[0].q;
+  const confirmed = await manual({
+    ...manualInput,
+    idempotency_key: randomUUID(),
+    check_in: date(44),
+    check_out: date(46),
+    status: "confirmed",
+    paid_sen: q.total_sen,
+    payment_reference: "TEST-MANUAL",
+  });
+  assert.equal(confirmed.payment_status, "paid");
+  assert.equal(confirmed.status, "confirmed");
+  const confirmedProjection = (
+    await client.query("select public.get_availability($1,$2) as a", [
+      date(44),
+      date(46),
+    ])
+  ).rows[0].a;
+  assert(
+    confirmedProjection.every(
+      (a: any) => a.state === "unavailable" && a.expires_at === null,
+    ),
+  );
+  await manual({
+    ...manualInput,
+    idempotency_key: randomUUID(),
+    check_in: date(46),
+    check_out: date(47),
+  });
+  ok(
+    "Manual paid confirmation appears unavailable and same-day turnover remains valid",
+  );
+  const r0 = (
+    await client.query("select revision from public.availability_revision")
+  ).rows[0].revision;
+  await client.query("select public.admin_action($1,$2)", [
+    actor,
+    { action: "cancel", id: m.id },
+  ]);
+  const released = (
+    await client.query("select public.get_availability($1,$2) as a", [
+      date(40),
+      date(41),
+    ])
+  ).rows[0].a;
+  assert.equal(released.length, 0);
+  assert(
+    BigInt(
+      (await client.query("select revision from public.availability_revision"))
+        .rows[0].revision,
+    ) > BigInt(r0),
+  );
+  await client.query("reset role");
+  await client.query(
+    "update public.bookings set expires_at=now()-interval '1 second' where status='pending' and check_in=$1",
+    [date(46)],
+  );
+  assert.equal(
+    (
+      await client.query("select public.get_availability($1,$2) as a", [
+        date(46),
+        date(47),
+      ])
+    ).rows[0].a.length,
+    0,
+  );
+  ok(
+    "Cancellation signals Realtime revision; expired holds disappear without waiting for cron",
+  );
   console.log(`\n${passed} database integration scenarios passed.`);
 } finally {
   await client.end();

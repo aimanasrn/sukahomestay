@@ -50,6 +50,9 @@ import {
   type PackageId,
   type Settings,
 } from "../domain";
+import { useAvailability } from "../useAvailability";
+import ManualBooking from "../ManualBooking";
+
 type Tab = "overview" | "bookings" | "calendar" | "stays" | "settings";
 export default function Admin() {
   const { t } = useLanguage();
@@ -249,11 +252,13 @@ function BookingsPanel({ overview }: { overview: boolean }) {
   const [list, setList] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const revision = useAvailability(dateAfter(), dateAfter(1));
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [selected, setSelected] = useState<Booking | null>(null);
+  const [manual, setManual] = useState(false);
   const reload = async () => {
     try {
       setList(await listBookings());
@@ -266,7 +271,7 @@ function BookingsPanel({ overview }: { overview: boolean }) {
   };
   useEffect(() => {
     void reload();
-  }, []);
+  }, [revision.rows]);
   const filtered = list.filter(
     (b) =>
       (!status || b.status === status) &&
@@ -278,9 +283,19 @@ function BookingsPanel({ overview }: { overview: boolean }) {
   );
   return (
     <>
+      {manual && (
+        <ManualBooking
+          onClose={() => setManual(false)}
+          onSaved={() => void reload()}
+        />
+      )}
       <div className="admin-heading">
         <h1>{t(overview ? "welcome" : "bookings")}</h1>
         <p>{t("adminSub")}</p>
+        <button className="button" onClick={() => setManual(true)}>
+          <Plus size={17} />
+          {t("manualBooking")}
+        </button>
       </div>
       <ErrorNotice code={error} />
       {overview && (
@@ -597,6 +612,7 @@ function BookingDetail({
 function ResourceCalendar({ compact = false }: { compact?: boolean }) {
   const { t, lang } = useLanguage();
   const [alloc, setAlloc] = useState<Allocation[]>([]);
+  const revision = useAvailability(dateAfter(), dateAfter(1));
   const [start, setStart] = useState(dateAfter());
   const [error, setError] = useState("");
   const [block, setBlock] = useState(false);
@@ -614,7 +630,7 @@ function ResourceCalendar({ compact = false }: { compact?: boolean }) {
   };
   useEffect(() => {
     void reload();
-  }, []);
+  }, [revision.rows]);
   const days = Array.from({ length: 14 }, (_, n) => {
     const d = new Date(`${start}T12:00:00Z`);
     d.setUTCDate(d.getUTCDate() + n);

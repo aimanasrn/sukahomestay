@@ -94,10 +94,18 @@ Deno.serve(async (req: Request) => {
         .eq("user_id", user.id)
         .maybeSingle();
       if (!profile) return response({ error: "FORBIDDEN" }, 403);
-      const { data, error } = await db.rpc("admin_action", {
-        actor: user.id,
-        p: body.payload,
-      });
+      const { data, error } = await db.rpc(
+        body.payload?.action === "create_manual"
+          ? "admin_create_booking"
+          : "admin_action",
+        {
+          actor: user.id,
+          p:
+            body.payload?.action === "create_manual"
+              ? body.payload.booking
+              : body.payload,
+        },
+      );
       if (error) throw error;
       return response({ data });
     }
