@@ -316,6 +316,29 @@ textarea:focus {
   width: 49px;
   height: 42px;
 }
+.logo > .brand-logo {
+  display: block;
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.admin-sidebar .logo > .brand-logo {
+  width: 44px;
+  height: 44px;
+}
+@media (min-width: 851px) and (max-width: 1150px) {
+  .admin-sidebar .logo > .brand-logo {
+    width: 30px;
+    height: 30px;
+  }
+}
+@media (max-width: 850px) {
+  .logo > .brand-logo {
+    width: 44px;
+    height: 44px;
+  }
+}
 .logo > span {
   font-family: "Playfair Display", Georgia, serif;
   font-size: 25px;

@@ -37,18 +37,13 @@ import { imageFor } from "./data";
 export function Logo() {
   return (
     <Link to="/" className="logo" aria-label="SUKA HOMESTAY">
-      <svg viewBox="0 0 56 46" fill="none" aria-hidden="true">
-        <path
-          d="M5 39 28 25 51 39M15 36v8m26-8v8M19 30l9-6 9 6M28 2v10M12 8l6 8M44 8l-6 8M3 22l11 3M53 22l-11 3"
-          stroke="currentColor"
-          strokeWidth="1.4"
-        />
-        <path
-          d="M22 23a7 7 0 0 1 12 0"
-          stroke="var(--primary)"
-          strokeWidth="1.5"
-        />
-      </svg>
+      <img
+        className="brand-logo"
+        src="/sukamainlogo.png"
+        alt=""
+        width="60"
+        height="60"
+      />
       <span>
         SUKA <span>HOMESTAY</span>
       </span>
