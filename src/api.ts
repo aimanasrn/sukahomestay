@@ -12,13 +12,14 @@ import {
   type Settings,
 } from "./domain";
 import { demoCatalog } from "./data";
+import { demoInvoice, type PaymentInvoice } from "./invoice";
 const url = import.meta.env.VITE_SUPABASE_URL;
 const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 export const supabase = url && key ? createClient(url, key) : null;
 export const isDemo = !url && !key;
 export function clearDemoBookings() {
   if (!isDemo) return;
-  for (const key of ["bookings", "blocks", "payment-keys"])
+  for (const key of ["bookings", "blocks", "payment-keys", "invoices"])
     localStorage.removeItem(`suka.${key}`);
 }
 const read = <T>(key: string, fallback: T): T => {
@@ -282,6 +283,18 @@ export async function adminAction(payload: Record<string, unknown>) {
         whatsapp: c.settings.whatsapp,
       };
       write("bookings", [b, ...list]);
+      if (p.paid_sen > 0)
+        write("invoices", [
+          demoInvoice(
+            b,
+            c.settings,
+            p.paid_sen,
+            p.payment_reference,
+            "payment",
+            p.idempotency_key,
+          ),
+          ...read<PaymentInvoice[]>("invoices", []),
+        ]);
       return b;
     }
     const blocks = read<Allocation[]>("blocks", []);
@@ -325,8 +338,7 @@ export async function adminAction(payload: Record<string, unknown>) {
           b.resources.includes(block.resource_id) &&
           overlaps(b.check_in, b.check_out, block.check_in, block.check_out),
       );
-      if (otherBookingBusy || blockBusy)
-        throw new Error("UNAVAILABLE");
+      if (otherBookingBusy || blockBusy) throw new Error("UNAVAILABLE");
       b.status = "confirmed";
     }
     if (action === "cancel" || action === "reject")
@@ -353,6 +365,18 @@ export async function adminAction(payload: Record<string, unknown>) {
             ? "paid"
             : "partially_paid";
       write("payment-keys", [...seen, String(payload.idempotency_key)]);
+      const catalog = await getCatalog();
+      write("invoices", [
+        demoInvoice(
+          b,
+          catalog.settings,
+          amount,
+          String(payload.reference),
+          action,
+          String(payload.idempotency_key),
+        ),
+        ...read<PaymentInvoice[]>("invoices", []),
+      ]);
     }
     write("bookings", list);
   };
@@ -506,3 +530,20 @@ export const canFit = (ids: Resource[], guests: number, c: Catalog) => {
     targets.reduce((s, a) => s + (a.capacity || 0), 0) >= guests
   );
 };
+
+export async function listInvoices(
+  bookingId: string,
+): Promise<PaymentInvoice[]> {
+  if (isDemo)
+    return read<PaymentInvoice[]>("invoices", []).filter(
+      (i) => i.booking_id === bookingId,
+    );
+  if (!supabase) throw new Error("REQUEST_FAILED");
+  const { data, error } = await supabase
+    .from("payment_invoices")
+    .select("*")
+    .eq("booking_id", bookingId)
+    .order("issued_at", { ascending: false });
+  fail(error);
+  return data as PaymentInvoice[];
+}

@@ -23,9 +23,9 @@ Use the demo dashboard's **Kosongkan tempahan demo / Clear demo bookings** butto
 ## What is included
 
 - Responsive customer site, accommodation details and calendars, selectable property diagram, comparison table, facilities, gallery lightbox, configurable location, FAQs and WhatsApp contact.
-- Six-stage booking journey with date/guest validation, availability checks, main-home add-ons, customer details, policies, itemized quote, success screen and bilingual WhatsApp/copy fallback.
+- Accommodation-first booking journey with an inline availability calendar (two months desktop, one mobile), optional roomstay add-ons, guest details, review, request submission and bilingual WhatsApp/copy fallback. Keyboard navigation, half-open date ranges, clear/retry states and focus/Realtime refresh are included.
 - BM by default; language preference persists. Dates, selected spaces, customer information and the current step survive language switching. Customer form fields remain in memory, rather than browser storage, until a demo request is submitted.
-- Admin authentication and allowlist; booking search/status/date filters, manual payment/refund records, confirmation/rejection/cancellation, internal notes, four-resource calendar, maintenance/owner blocks, bilingual accommodation editing, photo URL management, rates/overrides, fees, deposits, contact and policy settings.
+- Admin authentication and allowlist; booking search/status/date filters, manual WhatsApp/phone bookings with initial booking/payment status, payment/refund records, confirmation/rejection/cancellation, internal notes, four-resource calendar, maintenance/owner blocks, bilingual accommodation editing, photo URL management, rates/overrides, fees, deposits, contact and policy settings.
 - Database exclusion constraints, transactional resource allocation, hold expiry, idempotency, RLS, CAPTCHA and submission throttling. No public customer listing or public booking-status endpoint.
 
 ## Property facts that must be supplied
@@ -34,16 +34,19 @@ The main homestay has 4 bedrooms, 3 bathrooms, a living room, dining area and ki
 
 **Owner-supplied WhatsApp:** 013-949 8048 (`60139498048` for WhatsApp links). Included in the default demo settings; enter this number in the hosted admin settings when configuring production.
 
-**Not supplied and intentionally blank:** verified photos, address/map link, email, all guest capacities, check-in/out times, house rules and booking policies. Roomstay amenities are empty by default; no kitchen or main-home access is assumed. Admin can enter additional facilities as one `BM | EN` pair per line.
+**Not supplied and intentionally blank:** verified photos, address/map link, email, check-in/out times, house rules and booking policies. Roomstay amenities are empty by default; no kitchen or main-home access is assumed. Admin can enter additional facilities as one `BM | EN` pair per line.
 
-**Sample rates only:** Main RM450/night, each roomstay RM150/night, main-home roomstay add-on RM120/night, Whole House RM800/night. Weekend/date rates are initially unset. Cleaning and deposit default to zero (disabled). The 120-minute hold is an editable implementation default, not a published property policy. Live booking requests start disabled. All generated imagery is identified as illustrative, not actual photography. Replace photos using the admin photo URL controls; upload verified images to a CDN or Supabase Storage, then paste their HTTPS URLs. No fake reviews are included.
+**Demo defaults:** Main RM450/night, each roomstay RM150/night, main-home roomstay add-on RM120/night, Whole House RM800/night. **Connected project rates at calendar migration:** Main RM480/night, Roomstay A RM120, B RM140, C RM120, Whole House RM880. Imported capacities are 10, 2, 3, 2 and 17 respectively. Add-ons use each roomstay base rate until an owner configures a separate add-on rate. Weekend/date rates are initially unset. Cleaning and deposit default to zero (disabled). The 120-minute hold is an editable implementation default, not a published property policy. Live booking requests start disabled. All generated imagery is identified as illustrative, not actual photography. Replace photos using the admin photo URL controls; upload verified images to a CDN or Supabase Storage, then paste their HTTPS URLs. No fake reviews are included.
 
 ## Supabase setup
 
-The account's existing `sukahomestay` project was **paused** when inspected. No hosted project was resumed, migrated or changed. The new schema was tested in a separate local PostgreSQL database. Review and back up an existing hosted schema before applying these migrations; they are designed for a clean project/schema and do not convert the previous implementation.
+The existing project `cijnvbduxaasqtgrysee` has been restored and connected to the local preview. The inventory/calendar migrations, protected `booking-api` Edge Function, sanitized Realtime revision table, and expiry jobs are deployed. The legacy bookings/payments tables were empty and preserved in the restricted `legacy_suka` schema. Existing package rates, capacities and the protected admin account were carried forward; no fictional bookings were added to the hosted database.
 
+The local `.env.local` contains only the project URL and publishable key. The Edge Function currently accepts `http://127.0.0.1:5173`; set `ALLOWED_ORIGIN` to the exact production origin when deploying. **Guest requests remain disabled** until the owner confirms rates/policies, configures contact details and Turnstile, and enables bookings. The rates retain the sample label until the owner verifies them.
+
+For another installation:
 1. Choose a clean development project, or inspect/migrate the existing project deliberately. Authenticate the CLI (`npx supabase login`) and link it (`npx supabase link --project-ref YOUR_PROJECT_REF`). Run `npx supabase <command> --help` for the installed CLI's current options.
-2. Apply `supabase/migrations/20260907030502_property_inventory.sql` with `npx supabase db push`. `supabase/seed.sql` does not add fictional customers or property facts.
+2. Apply all SQL files in `supabase/migrations/` in timestamp order with `npx supabase db push`. `supabase/seed.sql` does not add fictional customers or property facts.
 3. In the Supabase SQL editor run `supabase/schedule-expiry.sql` **once**. It enables pg_cron and schedules hold cleanup every minute and rate-limit housekeeping daily. Check `cron.job` and `cron.job_run_details`. The named jobs can be updated by running the schedule file again. Expired holds are also released synchronously before every booking/admin inventory action, and ignored by public availability immediately after expiry.
 4. Create a Cloudflare Turnstile widget for your actual app hostname. Add `VITE_TURNSTILE_SITE_KEY` to the frontend environment. Store its secret only as an Edge Function secret.
 5. Set Edge Function secrets `ALLOWED_ORIGIN` (exact app origin, no trailing slash, e.g. `https://stay.example.com`) and `TURNSTILE_SECRET_KEY` using the Supabase dashboard or `npx supabase secrets set`. `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are supplied by the Supabase Edge runtime. **Never put a service-role key in a VITE_ variable or commit secrets.**
@@ -86,7 +89,7 @@ Add the configured cleaning fee **once per booking**. Round the deposit percenta
 - Public submission verifies Turnstile hostname and enforces at most five successful requests per hashed IP per hour. All writes are atomic. Duplicate submissions reuse a UUID idempotency key; the same key with different data is rejected. Payment records are idempotent separately.
 - Error responses map database conflicts to `UNAVAILABLE`; raw constraint details never leave the Edge Function.
 - Guest confirmation remains in memory for the current session. There is no public status lookup that could leak bookings. WhatsApp text comes from the saved snapshot. The user explicitly opens WhatsApp; opening it proves neither message delivery nor payment.
-- A hosted end-to-end test of Supabase Auth, Edge Function, Turnstile and cron must be performed after configuration. These external services were not activated during this build.
+- A hosted end-to-end test of Supabase Auth, Edge Function, Turnstile and cron must be performed after configuration. The API and expiry jobs are deployed; authenticated admin and CAPTCHA-protected guest submission still require an end-to-end check with the owner's credentials and configured widget.
 
 ## Verification
 
@@ -96,9 +99,9 @@ npm test
 npm run test:db
 ```
 
-`test:db` requires a local **isolated test** PostgreSQL server and `TEST_DATABASE_URL` (default `postgresql://postgres@127.0.0.1:55432/postgres`). It creates a uniquely named temporary database, installs an Auth/RLS test harness and the real migration, runs 23 scenarios, then drops only that temporary database. The database user needs CREATEDB and role-creation privileges. Never target production.
+`test:db` requires a local **isolated test** PostgreSQL server and `TEST_DATABASE_URL` (default `postgresql://postgres@127.0.0.1:55432/postgres`). It creates a uniquely named temporary database, installs an Auth/RLS test harness and the real migration, runs 31 scenarios, then drops only that temporary database. The database user needs CREATEDB and role-creation privileges. Never target production.
 
-Verified on PostgreSQL 18 locally: full migration, Whole/component conflicts in both directions, independent MAIN/roomstay coexistence, add-ons, same-day turnover, two concurrent requests, expiration, repeat submission, changed idempotent payload, required payment, expired confirmation conflict, cancellation release, maintenance blocks, date/weekend precedence, frontend/SQL pricing parity, anonymous and non-admin privacy, throttling, scheduled cleanup function. Six Vitest tests cover domain calculations and bilingual saved WhatsApp messages.
+Verified on PostgreSQL 18 locally: full migration, Whole/component conflicts in both directions, independent MAIN/roomstay coexistence, add-ons, same-day turnover, two concurrent requests, expiration, repeat submission, changed idempotent payload, required payment, expired confirmation conflict, cancellation release, maintenance blocks, date/weekend precedence, frontend/SQL pricing parity, anonymous and non-admin privacy, throttling, scheduled cleanup function. Sixteen Vitest tests cover domain calculations, bilingual saved WhatsApp messages, calendar selection and payment invoice documents.
 
 The in-app browser was used for desktop/mobile rendering and customer → language switch → add-on → details → request → copy-message → admin → payment → confirmation → filters verification. Browser tests use fictional local demo records only. A reusable Playwright suite is also supplied as `npm run test:e2e` (requires `npx playwright install chromium`); its automated runner is separate from the in-app browser verification.
 
@@ -114,3 +117,14 @@ npm run preview
 Deploy `dist/` on any HTTPS static host. Set the three VITE_ variables **at build time**. Configure SPA fallback to `/index.html` for `/stay/*`, `/book` and `/admin/*`. `_redirects` is supplied for compatible static hosts. Keep the frontend origin identical to the Edge Function's `ALLOWED_ORIGIN`. Do not deploy `.env*`, `.local/` or test database files. After deployment, check the five detail routes directly, a guest booking with CAPTCHA, an authenticated admin payment/confirmation, and a pg_cron expiry.
 
 No deployment, outbound WhatsApp message, or actual payment was performed by this implementation.
+
+
+## Payment invoices (PDF)
+
+Every recorded payment creates a unique, immutable `payment_invoices` snapshot in the same database transaction, including initial payments on manual bookings. Refunds create separate refund receipts. Existing ledger entries are backfilled by the payment-invoices migration. Six existing hosted ledger entries had matching invoice records when deployed; no payment amounts were changed.
+
+In **Admin > Bookings > Details > Payment invoices**, select **Prepare PDF**, then **Download PDF**. Attach the downloaded file to WhatsApp or email. **Share PDF** opens the device share sheet when file sharing is supported; the admin chooses the destination and completes sending. The app does not automatically send messages or upload invoices to a public URL.
+
+BM/EN PDFs contain a permanent invoice number, Malaysia issue timestamp, seller contact details, guest and stay information, itemized booking charges, the individual payment/reference, and the net-paid and remaining balance at that transaction. Later payments/refunds do not rewrite earlier documents. Set accurate seller contact details in property settings before recording payments. No tax rates or registration numbers are invented.
+
+Invoice records are readable only by allowlisted admins under RLS. Browser PDF generation is lazy-loaded when an admin prepares a document. Demo PDFs are visibly marked DEMO. Verification: 31 PostgreSQL integration scenarios and 16 unit tests pass; BM/EN PDFs were rendered and inspected, and the admin demo was used to record two partial payments, prepare/download a PDF, and check mobile controls. Native sharing delivery depends on the chosen device/app and was not sent during testing.

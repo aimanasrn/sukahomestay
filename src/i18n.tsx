@@ -7,6 +7,22 @@ import {
 } from "react";
 import type { Lang } from "./domain";
 const en = {
+  paymentInvoices: "Payment invoices",
+  invoiceSendHelp:
+    "Prepare the PDF, then download and attach it to WhatsApp or email. Supported devices also offer Share PDF.",
+  noInvoices:
+    "No payment invoices yet. Recording a payment creates one automatically.",
+  invoiceLoadFailed: "Invoices could not be loaded. Please retry.",
+  invoicePdfFailed: "The PDF could not be prepared. Please retry.",
+  invoiceShareFailed:
+    "Sharing was unavailable. Download the PDF and attach it manually.",
+  paymentInvoice: "Payment invoice",
+  refundReceipt: "Refund receipt",
+  preparePdf: "Prepare PDF",
+  preparingPdf: "Preparing PDF�",
+  downloadPdf: "Download PDF",
+  sharePdf: "Share PDF",
+
   calendarIntro:
     "Choose available dates on the calendar to start your booking.",
   continueBooking: "Continue Booking",
@@ -297,8 +313,7 @@ const en = {
   paymentNote:
     "Record a verified manual payment before confirmation. Expired bookings are checked for conflicts again.",
   INVALID_DATES: "Choose a valid future stay of 1–60 nights.",
-  INVALID_RESOURCES:
-    "Choose one or more units, or Whole House for all units.",
+  INVALID_RESOURCES: "Choose one or more units, or Whole House for all units.",
   INVALID_CUSTOMER: "Please check your name, phone, email, and guest numbers.",
   POLICY_REQUIRED: "Please read and accept the current booking policies.",
   BOOKING_NOT_CONFIGURED:
@@ -330,6 +345,22 @@ const en = {
 type Key = keyof typeof en;
 const ms: Record<Key, string> = {
   ...en,
+  paymentInvoices: "Invois bayaran",
+  invoiceSendHelp:
+    "Sediakan PDF, kemudian muat turun dan lampirkan pada WhatsApp atau e-mel. Peranti yang menyokongnya juga menawarkan Kongsi PDF.",
+  noInvoices:
+    "Belum ada invois bayaran. Invois dicipta secara automatik apabila bayaran direkodkan.",
+  invoiceLoadFailed: "Invois tidak dapat dimuatkan. Sila cuba lagi.",
+  invoicePdfFailed: "PDF tidak dapat disediakan. Sila cuba lagi.",
+  invoiceShareFailed:
+    "Perkongsian tidak tersedia. Muat turun PDF dan lampirkannya secara manual.",
+  paymentInvoice: "Invois bayaran",
+  refundReceipt: "Resit bayaran balik",
+  preparePdf: "Sediakan PDF",
+  preparingPdf: "Menyediakan PDF�",
+  downloadPdf: "Muat turun PDF",
+  sharePdf: "Kongsi PDF",
+
   calendarIntro:
     "Pilih tarikh yang tersedia pada kalendar untuk mula membuat tempahan.",
   continueBooking: "Teruskan Tempahan",

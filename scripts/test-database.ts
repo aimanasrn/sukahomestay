@@ -523,6 +523,140 @@ try {
   ok(
     "Cancellation signals Realtime revision; expired holds disappear without waiting for cron",
   );
+  {
+    const ib = (
+      await client.query("select public.admin_create_booking($1,$2) as b", [
+        actor,
+        { ...input(["ROOM_C"], 70, 72), status: "pending", paid_sen: 0 },
+      ])
+    ).rows[0].b;
+    const pk = randomUUID();
+    const pay = {
+      action: "payment",
+      id: ib.id,
+      amount_sen: 2000,
+      reference: "BANK-INVOICE-1",
+      idempotency_key: pk,
+    };
+    await client.query("set role service_role");
+    await client.query("select public.admin_action($1,$2)", [actor, pay]);
+    await client.query("select public.admin_action($1,$2)", [actor, pay]);
+    const first = (
+      await client.query(
+        "select * from public.payment_invoices where booking_id=$1",
+        [ib.id],
+      )
+    ).rows[0];
+    assert.equal(first.amount_sen, 2000);
+    assert.equal(first.snapshot.net_paid_sen, 2000);
+    assert.equal(first.snapshot.balance_sen, ib.total_sen - 2000);
+    assert(!("notes" in first.snapshot));
+    assert(!("idempotency_key" in first.snapshot));
+    assert.equal(
+      (
+        await client.query(
+          "select count(*)::int as n from public.payment_invoices where booking_id=$1",
+          [ib.id],
+        )
+      ).rows[0].n,
+      1,
+    );
+    ok(
+      "Payment atomically creates a private invoice; repeated payment creates no duplicate",
+    );
+    await client.query("select public.admin_action($1,$2)", [
+      actor,
+      {
+        ...pay,
+        amount_sen: 1000,
+        reference: "BANK-INVOICE-2",
+        idempotency_key: randomUUID(),
+      },
+    ]);
+    await client.query("select public.admin_action($1,$2)", [
+      actor,
+      {
+        ...pay,
+        action: "refund",
+        amount_sen: 500,
+        reference: "REFUND-INVOICE-3",
+        idempotency_key: randomUUID(),
+      },
+    ]);
+    const docs = (
+      await client.query(
+        "select * from public.payment_invoices where booking_id=$1 order by issued_at,invoice_number",
+        [ib.id],
+      )
+    ).rows;
+    assert.equal(docs.length, 3);
+    assert.equal(new Set(docs.map((i) => i.invoice_number)).size, 3);
+    assert.deepEqual(
+      docs.map((i) => i.snapshot.net_paid_sen),
+      [2000, 3000, 2500],
+    );
+    assert.equal(docs[2].kind, "refund");
+    assert.deepEqual(docs[0], first);
+    ok(
+      "Partial payments and refunds retain separate immutable balances and document numbers",
+    );
+    await client.query("reset role");
+    await rejects(
+      () =>
+        client.query(
+          "update public.payment_invoices set amount_sen=1 where payment_id=$1",
+          [first.payment_id],
+        ),
+      /INVOICE_IMMUTABLE/,
+    );
+    await client.query("set role anon");
+    await rejects(
+      () => client.query("select * from public.payment_invoices"),
+      /permission denied/,
+    );
+    await client.query("reset role");
+    await client.query("select set_config('request.jwt.claim.sub',$1,false)", [
+      randomUUID(),
+    ]);
+    await client.query("set role authenticated");
+    assert.equal(
+      (await client.query("select * from public.payment_invoices")).rows.length,
+      0,
+    );
+    await rejects(
+      () =>
+        client.query(
+          "insert into public.payment_invoices select * from public.payment_invoices",
+        ),
+      /permission denied/,
+    );
+    await client.query("reset role");
+    await client.query("select set_config('request.jwt.claim.sub',$1,false)", [
+      actor,
+    ]);
+    await client.query("set role authenticated");
+    assert.equal(
+      (
+        await client.query(
+          "select * from public.payment_invoices where booking_id=$1",
+          [ib.id],
+        )
+      ).rows.length,
+      3,
+    );
+    await client.query("reset role");
+    assert.equal(
+      (
+        await client.query(
+          "select count(*)::int as n from public.payments p left join public.payment_invoices i on i.payment_id=p.id where i.payment_id is null",
+        )
+      ).rows[0].n,
+      0,
+    );
+    ok(
+      "Invoices cannot be changed or forged; only allowlisted admins can read them; every payment has an invoice",
+    );
+  }
   console.log(`\n${passed} database integration scenarios passed.`);
 } finally {
   await client.end();

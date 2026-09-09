@@ -52,6 +52,7 @@ import {
 } from "../domain";
 import { useAvailability } from "../useAvailability";
 import ManualBooking from "../ManualBooking";
+import PaymentInvoices from "../PaymentInvoices";
 
 type Tab = "overview" | "bookings" | "calendar" | "stays" | "settings";
 export default function Admin() {
@@ -261,7 +262,11 @@ function BookingsPanel({ overview }: { overview: boolean }) {
   const [manual, setManual] = useState(false);
   const reload = async () => {
     try {
-      setList(await listBookings());
+      const latest = await listBookings();
+      setList(latest);
+      setSelected((previous) =>
+        previous ? latest.find((b) => b.id === previous.id) || null : null,
+      );
       setError("");
     } catch (e) {
       setError((e as Error).message);
@@ -415,7 +420,9 @@ function BookingsPanel({ overview }: { overview: boolean }) {
                   </td>
                   <td>
                     {names[b.quote.package_id][lang]}
-                    <small>{b.resources.map((r) => names[r][lang]).join(" + ")}</small>
+                    <small>
+                      {b.resources.map((r) => names[r][lang]).join(" + ")}
+                    </small>
                   </td>
                   <td>
                     {money(b.quote.total_sen, lang)}
@@ -460,7 +467,6 @@ function BookingsPanel({ overview }: { overview: boolean }) {
           onClose={() => setSelected(null)}
           onUpdate={async () => {
             await reload();
-            setSelected(null);
           }}
         />
       )}
@@ -482,7 +488,8 @@ function BookingDetail({
   const [reference, setReference] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const [paymentKey] = useState(crypto.randomUUID());
+  const [paymentKey, setPaymentKey] = useState(crypto.randomUUID());
+  const [invoiceRevision, setInvoiceRevision] = useState(0);
   const action = async (name: string) => {
     setBusy(true);
     setError("");
@@ -496,6 +503,12 @@ function BookingDetail({
         idempotency_key: paymentKey,
       });
       await onUpdate();
+      if (name === "payment" || name === "refund") {
+        setPaymentKey(crypto.randomUUID());
+        setAmount("");
+        setReference("");
+        setInvoiceRevision((n) => n + 1);
+      }
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -543,6 +556,8 @@ function BookingDetail({
       >
         {t("save")}
       </button>
+      <hr />
+      <PaymentInvoices bookingId={b.id} revision={invoiceRevision} />
       <hr />
       <h3>{t("recordPayment")}</h3>
       <p className="small">{t("paymentNote")}</p>
@@ -770,7 +785,9 @@ function ResourceCalendar({ compact = false }: { compact?: boolean }) {
                 onChange={(e) => setResource(e.target.value)}
               >
                 {resources.map((r) => (
-                  <option key={r} value={r}>{names[r][lang]}</option>
+                  <option key={r} value={r}>
+                    {names[r][lang]}
+                  </option>
                 ))}
               </select>
             </Field>

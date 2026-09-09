@@ -4179,3 +4179,25 @@ footer a:hover {
     flex-direction: column;
   }
 }
+
+.payment-invoices {
+  margin: 24px 0;
+}
+.invoice-row {
+  border: 1px solid var(--border);
+  background: var(--background-subtle);
+  padding: 18px;
+  border-radius: 10px;
+  margin: 12px 0;
+  overflow-wrap: anywhere;
+}
+.invoice-row p {
+  margin: 6px 0;
+}
+.invoice-row .action-row {
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.invoice-row .button {
+  min-height: 44px;
+}
