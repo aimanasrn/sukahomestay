@@ -134,7 +134,7 @@ export default function Stay() {
               aria-label={`${t("viewPhoto")} ${index + 2} / ${a.photos.length}`}
               onClick={() => setGalleryIndex(index + 1)}
             >
-              <Photo src={src} />
+              <Photo src={src} accommodation={a} />
             </button>
           ))}
         </div>

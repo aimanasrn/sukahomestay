@@ -22,6 +22,7 @@ import {
   Modal,
 } from "../components";
 import { canonicalPackage, names, type Resource } from "../domain";
+import { interleavePhotos } from "../propertyPhotos";
 export default function Home() {
   const { t, lang } = useLanguage();
   const { catalog, setDraft } = useApp();
@@ -31,9 +32,9 @@ export default function Home() {
   const heroSrc = heroFailed
     ? "/images/courtyard.webp"
     : "/herosectionimage.png";
-  const actualGallery = [
-    ...new Set(catalog.accommodations.flatMap((a) => a.photos)),
-  ];
+  const actualGallery = interleavePhotos(
+    catalog.accommodations.filter((a) => a.id !== "WHOLE").map((a) => a.photos),
+  );
   const galleryImages = actualGallery.length
     ? actualGallery.slice(0, 6)
     : ["/images/courtyard.webp", "/images/bedroom.webp"];
@@ -45,7 +46,9 @@ export default function Home() {
         <img
           className="hero-image"
           src={heroSrc}
-          alt={heroSrc.startsWith("/images/") ? t("photo") : "Suka Room&Homestay"}
+          alt={
+            heroSrc.startsWith("/images/") ? t("photo") : "Suka Room&Homestay"
+          }
           onError={() => setHeroFailed(true)}
           fetchPriority="high"
         />

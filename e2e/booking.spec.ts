@@ -135,7 +135,9 @@ test("bilingual demo booking, inventory availability, and admin payment workflow
   await page
     .getByRole("button", { name: "Rekod bayaran", exact: true })
     .click();
-  await page.getByRole("button", { name: "Maklumat", exact: true }).click();
+  // Recording payment refreshes this modal in place; it no longer closes.
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(page.getByRole("dialog")).toContainText("1,140");
   await page
     .getByRole("button", { name: "Sahkan tempahan", exact: true })
     .click();

@@ -1,4 +1,5 @@
 import type { Catalog } from "./domain";
+import { propertyPhotos } from "./propertyPhotos";
 export const demoCatalog: Catalog = {
   accommodations: [
     {
@@ -14,7 +15,7 @@ export const demoCatalog: Catalog = {
         ms: "Empat bilik tidur dan tiga bilik air, dengan ruang tamu, ruang makan dan dapur untuk masa bersama.",
         en: "Four bedrooms and three bathrooms, with a living room, dining area, and kitchen for time together.",
       },
-      photos: [],
+      photos: [...propertyPhotos.MAIN],
     },
     ...(["ROOM_A", "ROOM_B", "ROOM_C"] as const).map((id) => ({
       id,
@@ -29,7 +30,7 @@ export const demoCatalog: Catalog = {
         ms: "Unit penginapan gaya studio yang boleh ditempah secara berasingan. Satu bilik tidur dan satu bilik air.",
         en: "An independently bookable studio-style accommodation. One bedroom and one bathroom.",
       },
-      photos: [],
+      photos: [...propertyPhotos[id]],
     })),
     {
       id: "WHOLE",
@@ -44,7 +45,7 @@ export const demoCatalog: Catalog = {
         ms: "Homestay utama dan semua tiga roomstay dalam satu tempahan. Tujuh bilik tidur dan enam bilik air untuk bersama.",
         en: "The main homestay and all three roomstays in one reservation. Seven bedrooms and six bathrooms to bring everyone together.",
       },
-      photos: [],
+      photos: [...propertyPhotos.WHOLE],
     },
   ],
   settings: {

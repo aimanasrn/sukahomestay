@@ -12,6 +12,7 @@ import {
   type Settings,
 } from "./domain";
 import { demoCatalog } from "./data";
+import { withPropertyPhotos } from "./propertyPhotos";
 import { demoInvoice, type PaymentInvoice } from "./invoice";
 const url = import.meta.env.VITE_SUPABASE_URL;
 const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -56,7 +57,8 @@ const fail = (error: unknown) => {
 };
 export async function getCatalog(): Promise<Catalog> {
   if (Boolean(url) !== Boolean(key)) throw new Error("BOOKING_NOT_CONFIGURED");
-  if (!supabase) return structuredClone(read("catalog", demoCatalog));
+  if (!supabase)
+    return withPropertyPhotos(structuredClone(read("catalog", demoCatalog)));
   const result = await Promise.all([
     supabase.from("accommodation_packages").select("*"),
     supabase.from("property_settings").select("*").single(),
@@ -65,7 +67,7 @@ export async function getCatalog(): Promise<Catalog> {
     supabase.from("rate_rules").select("*"),
   ]);
   result.forEach((r) => fail(r.error));
-  return {
+  return withPropertyPhotos({
     settings: result[1].data as unknown as Settings,
     rate_rules: result[4].data as unknown as Catalog["rate_rules"],
     accommodations: (result[0].data as unknown as { id: string }[]).map(
@@ -90,7 +92,7 @@ export async function getCatalog(): Promise<Catalog> {
           .map((p) => p.url),
       }),
     ) as Catalog["accommodations"],
-  };
+  });
 }
 export async function availability(
   ci: string,

@@ -3,8 +3,14 @@ import type {
   Content,
   TableCell,
 } from "pdfmake/interfaces";
-import { formatDate, money, names, type Lang } from "./domain";
+import { formatDate, names, type Lang } from "./domain";
 import type { PaymentInvoice } from "./invoice";
+import invoiceLogo from "./assets/invoice-logo.png?inline";
+
+const businessName = "SUKA Room&Homestay";
+const ink = "#192238",
+  orange = "#C44F00",
+  muted = "#667085";
 
 export function invoiceDocument(
   invoice: PaymentInvoice,
@@ -34,29 +40,89 @@ export function invoiceDocument(
   const seller = [s.seller.address, s.seller.email, s.seller.phone]
     .filter(Boolean)
     .join("\n");
-  const itemLabel = (value: string) =>
-    names[value as keyof typeof names]?.[lang] ||
-    (value === "cleaning" ? label("Caj pembersihan", "Cleaning fee") : value);
+  const itemLabel = (value: string): Content => {
+    const [unit, date] = value.split("|");
+    const name = names[unit as keyof typeof names]?.[lang];
+    if (name)
+      return {
+        stack: [
+          { text: name, bold: true },
+          ...(date &&
+          /^\d{4}-\d{2}-\d{2}$/.test(date) &&
+          !Number.isNaN(Date.parse(date))
+            ? [
+                {
+                  text: formatDate(date, lang),
+                  fontSize: 8,
+                  color: muted,
+                  margin: [0, 3, 0, 0] as [number, number, number, number],
+                },
+              ]
+            : []),
+        ],
+      };
+    return {
+      text:
+        value === "cleaning" ? label("Caj pembersihan", "Cleaning fee") : value,
+    };
+  };
+  const tableLayout = {
+    hLineWidth: () => 0.5,
+    vLineWidth: () => 0,
+    hLineColor: () => "#E5E8EE",
+    paddingLeft: () => 10,
+    paddingRight: () => 10,
+    paddingTop: () => 6,
+    paddingBottom: () => 6,
+  };
   const content: Content[] = [
     {
-      text: s.seller.name,
-      fontSize: 25,
-      bold: true,
-      color: "#192238",
-      margin: [0, 0, 0, 5],
+      columns: [
+        { image: invoiceLogo, fit: [58, 58], width: 68 },
+        {
+          width: "*",
+          stack: [
+            {
+              text: businessName,
+              fontSize: 22,
+              bold: true,
+              color: ink,
+              margin: [0, 6, 0, 6],
+            },
+            { text: seller, fontSize: 9, color: muted },
+          ],
+        },
+      ],
+      columnGap: 10,
+      margin: [0, 0, 0, 14],
     },
-    { text: seller, color: "#535D70", margin: [0, 0, 0, seller ? 20 : 0] },
+    {
+      canvas: [
+        {
+          type: "line",
+          x1: 0,
+          y1: 0,
+          x2: 511,
+          y2: 0,
+          lineWidth: 2,
+          lineColor: orange,
+        },
+      ],
+      margin: [0, 0, 0, 18],
+    },
     {
       text: title,
-      fontSize: 17,
+      fontSize: 18,
       bold: true,
       color: "#C44F00",
-      margin: [0, 10, 0, 12],
+      margin: [0, 0, 0, 8],
     },
-    { text: invoice.invoice_number, bold: true, fontSize: 11 },
+    { text: invoice.invoice_number, bold: true, fontSize: 11, color: ink },
     {
       text: `${label("Tarikh dikeluarkan", "Issued")}: ${issued} (MYT)`,
-      margin: [0, 5, 0, 18],
+      fontSize: 9,
+      color: muted,
+      margin: [0, 5, 0, 14],
     },
     {
       columns: [
@@ -83,96 +149,109 @@ export function invoiceDocument(
         },
       ],
       columnGap: 25,
-      margin: [0, 0, 0, 22],
+      margin: [0, 0, 0, 16],
     },
     {
       table: {
         headerRows: 1,
-        widths: ["*", 38, 82, 82],
+        dontBreakRows: true,
+        widths: ["*", 40, 80, 80],
         body: [
           [
             label("Butiran penginapan", "Stay charges"),
             label("Kuantiti", "Qty"),
             label("Kadar", "Rate"),
             label("Jumlah", "Amount"),
-          ].map((text) => ({ text, bold: true, fillColor: "#EAF5FF" })),
+          ].map((text, i) => ({
+            text,
+            fontSize: 9,
+            bold: true,
+            color: "#FFFFFF",
+            fillColor: ink,
+            alignment: i >= 2 ? "right" : i === 1 ? "center" : "left",
+          })),
           ...s.quote.items.map((i): TableCell[] => [
-            { text: itemLabel(i.label) },
-            String(i.quantity),
+            itemLabel(i.label),
+            { text: String(i.quantity), alignment: "center" },
             { text: amount(i.unit_sen), alignment: "right" },
             { text: amount(i.total_sen), alignment: "right" },
           ]),
         ],
       },
-      layout: "lightHorizontalLines",
+      layout: tableLayout,
       margin: [0, 0, 0, 16],
     },
     {
-      text: `${label("Jumlah tempahan", "Booking total")}: ${amount(s.quote.total_sen)}`,
-      alignment: "right",
-      bold: true,
-      margin: [0, 0, 0, 18],
-    },
-    {
-      table: {
-        widths: ["*", "auto"],
-        body: [
-          [
-            {
-              text:
-                invoice.kind === "payment"
-                  ? label("BAYARAN INI DITERIMA", "THIS PAYMENT RECEIVED")
-                  : label("BAYARAN BALIK INI", "THIS REFUND"),
-              bold: true,
-              color: "#FFFFFF",
-              fillColor: "#C44F00",
-            },
-            {
-              text: amount(invoice.amount_sen),
-              bold: true,
-              color: "#FFFFFF",
-              fillColor: "#C44F00",
-              alignment: "right",
-            },
-          ],
-          [
-            label(
-              "Bayaran bersih selepas transaksi ini",
-              "Net paid after this transaction",
-            ),
-            { text: amount(s.net_paid_sen), alignment: "right" },
-          ],
-          [
-            label(
-              "Baki selepas transaksi ini",
-              "Balance after this transaction",
-            ),
-            { text: amount(s.balance_sen), alignment: "right" },
-          ],
-        ],
-      },
-      layout: "lightHorizontalLines",
-      margin: [0, 0, 0, 16],
-    },
-    {
-      text: `${label("Rujukan bayaran", "Payment reference")}: ${s.payment_reference}`,
-      margin: [0, 0, 0, 18],
-    },
-    {
-      text: label(
-        "Dokumen ini merekodkan satu transaksi bayaran sahaja. Jumlah penginapan ditunjukkan untuk rujukan. Bayaran atau bayaran balik kemudian mempunyai dokumen berasingan.",
-        "This document records one payment transaction. Stay charges are shown for reference. Later payments or refunds have separate documents.",
-      ),
-      fontSize: 9,
-      color: "#535D70",
-    },
-    {
-      text: label(
-        "Terima kasih kerana memilih Suka Room&Homestay.",
-        "Thank you for choosing Suka Room&Homestay.",
-      ),
-      margin: [0, 14, 0, 0],
-      color: "#C44F00",
+      unbreakable: true,
+      stack: [
+        {
+          text: `${label("Jumlah tempahan", "Booking total")}: ${amount(s.quote.total_sen)}`,
+          alignment: "right",
+          bold: true,
+          margin: [0, 0, 0, 18],
+        },
+        {
+          table: {
+            widths: ["*", "auto"],
+            body: [
+              [
+                {
+                  text:
+                    invoice.kind === "payment"
+                      ? label("BAYARAN INI DITERIMA", "THIS PAYMENT RECEIVED")
+                      : label("BAYARAN BALIK INI", "THIS REFUND"),
+                  bold: true,
+                  color: "#FFFFFF",
+                  fillColor: "#C44F00",
+                },
+                {
+                  text: amount(invoice.amount_sen),
+                  bold: true,
+                  color: "#FFFFFF",
+                  fillColor: "#C44F00",
+                  alignment: "right",
+                },
+              ],
+              [
+                label(
+                  "Bayaran bersih selepas transaksi ini",
+                  "Net paid after this transaction",
+                ),
+                { text: amount(s.net_paid_sen), alignment: "right" },
+              ],
+              [
+                label(
+                  "Baki selepas transaksi ini",
+                  "Balance after this transaction",
+                ),
+                { text: amount(s.balance_sen), alignment: "right" },
+              ],
+            ],
+          },
+          layout: tableLayout,
+          margin: [0, 0, 0, 16],
+        },
+        {
+          text: `${label("Rujukan bayaran", "Payment reference")}: ${s.payment_reference}`,
+          margin: [0, 0, 0, 18],
+        },
+        {
+          text: label(
+            "Dokumen ini merekodkan satu transaksi bayaran sahaja. Jumlah penginapan ditunjukkan untuk rujukan. Bayaran atau bayaran balik kemudian mempunyai dokumen berasingan.",
+            "This document records one payment transaction. Stay charges are shown for reference. Later payments or refunds have separate documents.",
+          ),
+          fontSize: 9,
+          color: "#535D70",
+        },
+        {
+          text: label(
+            `Terima kasih kerana memilih ${businessName}.`,
+            `Thank you for choosing ${businessName}.`,
+          ),
+          margin: [0, 14, 0, 0],
+          color: "#C44F00",
+        },
+      ],
     },
   ];
   return {
@@ -180,19 +259,19 @@ export function invoiceDocument(
     pageMargins: [42, 42, 42, 52],
     defaultStyle: {
       font: "Roboto",
-      fontSize: 10,
+      fontSize: 9.5,
       color: "#192238",
-      lineHeight: 1.25,
+      lineHeight: 1.15,
     },
     styles: { label: { fontSize: 9, color: "#667085", margin: [0, 0, 0, 7] } },
     content,
     info: {
       title: `${title} ${invoice.invoice_number}`,
-      author: "Suka Room&Homestay",
+      author: businessName,
       subject: s.booking_reference,
     },
     footer: (page, count) => ({
-      text: `Suka Room&Homestay | ${invoice.invoice_number} | ${page} / ${count}`,
+      text: `${businessName} | ${invoice.invoice_number} | ${page} / ${count}`,
       alignment: "center",
       fontSize: 8,
       color: "#667085",
