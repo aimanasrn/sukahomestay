@@ -225,16 +225,16 @@ export function whatsappMessage(b: Booking, lang: Lang) {
   const selected = b.resources.map((r) => names[r][lang]).join(" + ");
   const q = b.quote;
   return lang === "ms"
-    ? `Salam SUKA HOMESTAY!\nRujukan: ${b.reference}\nNama: ${b.name}\nTelefon: ${b.phone}\nTarikh: ${formatDate(b.check_in, lang)} – ${formatDate(b.check_out, lang)}\n${q.nights} malam · ${b.adults} dewasa, ${b.children} kanak-kanak\nPenginapan: ${selected}\n${q.bedrooms} bilik tidur · ${q.bathrooms} bilik air\nAnggaran jumlah: ${money(q.total_sen, lang)}\nDeposit: ${money(q.deposit_sen, lang)}\nPermintaan khas: ${b.special_requests || "—"}\nMenunggu semakan pembayaran dan pengesahan admin.`
-    : `Hello SUKA HOMESTAY!\nReference: ${b.reference}\nName: ${b.name}\nPhone: ${b.phone}\nDates: ${formatDate(b.check_in, lang)} – ${formatDate(b.check_out, lang)}\n${q.nights} nights · ${b.adults} adults, ${b.children} children\nAccommodation: ${selected}\n${q.bedrooms} bedrooms · ${q.bathrooms} bathrooms\nEstimated total: ${money(q.total_sen, lang)}\nDeposit: ${money(q.deposit_sen, lang)}\nSpecial requests: ${b.special_requests || "—"}\nAwaiting payment review and admin confirmation.`;
+    ? `Salam Suka Room&Homestay!\nRujukan: ${b.reference}\nNama: ${b.name}\nTelefon: ${b.phone}\nTarikh: ${formatDate(b.check_in, lang)} – ${formatDate(b.check_out, lang)}\n${q.nights} malam · ${b.adults} dewasa, ${b.children} kanak-kanak\nPenginapan: ${selected}\n${q.bedrooms} bilik tidur · ${q.bathrooms} bilik air\nAnggaran jumlah: ${money(q.total_sen, lang)}\nDeposit: ${money(q.deposit_sen, lang)}\nPermintaan khas: ${b.special_requests || "—"}\nMenunggu semakan pembayaran dan pengesahan admin.`
+    : `Hello Suka Room&Homestay!\nReference: ${b.reference}\nName: ${b.name}\nPhone: ${b.phone}\nDates: ${formatDate(b.check_in, lang)} – ${formatDate(b.check_out, lang)}\n${q.nights} nights · ${b.adults} adults, ${b.children} children\nAccommodation: ${selected}\n${q.bedrooms} bedrooms · ${q.bathrooms} bathrooms\nEstimated total: ${money(q.total_sen, lang)}\nDeposit: ${money(q.deposit_sen, lang)}\nSpecial requests: ${b.special_requests || "—"}\nAwaiting payment review and admin confirmation.`;
 }
 
 export function whatsappEnquiry(b: BookingInput, lang: Lang) {
   const ms = lang === "ms";
   return [
     ms
-      ? "Salam admin SUKA HOMESTAY! Saya ingin bertanya tentang tempahan penginapan."
-      : "Hello SUKA HOMESTAY admin! I would like to enquire about a stay booking.",
+      ? "Salam admin Suka Room&Homestay! Saya ingin bertanya tentang tempahan penginapan."
+      : "Hello Suka Room&Homestay admin! I would like to enquire about a stay booking.",
     `${ms ? "Penginapan" : "Accommodation"}: ${b.resources.map((r) => names[r][lang]).join(" + ")}`,
     b.check_in &&
       `${ms ? "Tarikh masuk" : "Check-in"}: ${formatDate(b.check_in, lang)}`,

@@ -106,7 +106,7 @@ const en = {
   propertyEyebrow: "ONE PROPERTY, YOUR WAY",
   propertyTitle: "A little space.\nA lot of togetherness.",
   propertyDesc:
-    "SUKA HOMESTAY is one property with a main home and three separate roomstays. Book just the space you need, or make room for everyone.",
+    "Suka Room&Homestay is one property with a main home and three separate roomstays. Book just the space you need, or make room for everyone.",
   diagramNote: "Conceptual diagram, not an architectural floor plan.",
   diagramHelp: "Select spaces to explore your combination.",
   addonTitle: "A few more coming along?",
@@ -128,7 +128,7 @@ const en = {
   galleryEyebrow: "A FEEL FOR YOUR STAY",
   galleryTitle: "Imagine the moments.",
   galleryDesc:
-    "A visual mood for SUKA HOMESTAY. All images shown are placeholders while we prepare our actual property photographs.",
+    "A visual mood for Suka Room&Homestay. All images shown are placeholders while we prepare our actual property photographs.",
   locationTitle: "Find your way here.",
   locationDesc:
     "Exact address and directions will be added by the property team.",
@@ -156,7 +156,7 @@ const en = {
     "A quiet escape, a family gathering, or a little of both. Find the stay that feels like you.",
   footer: "One home. Many ways to feel at home.",
   admin: "Admin",
-  copyright: "SUKA HOMESTAY. All rights reserved.",
+  copyright: "Suka Room&Homestay. All rights reserved.",
   whatsapp: "Chat on WhatsApp",
   noWhatsapp: "The property’s WhatsApp number has not been configured yet.",
   close: "Close",
@@ -447,7 +447,7 @@ const ms: Record<Key, string> = {
   propertyEyebrow: "SATU KAWASAN, PILIHAN ANDA",
   propertyTitle: "Ruang untuk berehat.\nTempat untuk bersama.",
   propertyDesc:
-    "SUKA HOMESTAY ialah satu hartanah dengan sebuah rumah utama dan tiga roomstay berasingan. Tempah ruang yang anda perlukan, atau sediakan tempat untuk semua.",
+    "Suka Room&Homestay ialah satu hartanah dengan sebuah rumah utama dan tiga roomstay berasingan. Tempah ruang yang anda perlukan, atau sediakan tempat untuk semua.",
   diagramNote: "Diagram konsep, bukan pelan lantai sebenar.",
   diagramHelp: "Pilih ruang untuk melihat gabungan penginapan anda.",
   addonTitle: "Ada yang nak ikut sekali?",
@@ -469,7 +469,7 @@ const ms: Record<Key, string> = {
   galleryEyebrow: "BAYANGKAN PENGINAPAN ANDA",
   galleryTitle: "Kenangan bermula di sini.",
   galleryDesc:
-    "Gambaran suasana SUKA HOMESTAY. Semua gambar adalah ilustrasi sementara menunggu foto sebenar hartanah.",
+    "Gambaran suasana Suka Room&Homestay. Semua gambar adalah ilustrasi sementara menunggu foto sebenar hartanah.",
   locationTitle: "Jalan menuju kenangan.",
   locationDesc:
     "Alamat dan panduan arah akan dikemas kini oleh pihak pengurusan.",
@@ -496,7 +496,7 @@ const ms: Record<Key, string> = {
   finalDesc:
     "Percutian santai, perjumpaan keluarga, atau kedua-duanya. Pilih penginapan yang sesuai untuk anda.",
   footer: "Satu rumah. Pelbagai cara untuk rasa seperti di rumah.",
-  copyright: "SUKA HOMESTAY. Hak cipta terpelihara.",
+  copyright: "Suka Room&Homestay. Hak cipta terpelihara.",
   whatsapp: "Hubungi melalui WhatsApp",
   noWhatsapp: "Nombor WhatsApp hartanah belum ditetapkan.",
   close: "Tutup",

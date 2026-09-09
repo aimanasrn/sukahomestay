@@ -133,7 +133,7 @@ export default function Admin() {
             <LanguageSwitch />
           </div>
           <div>
-            <span className="eyebrow">SUKA HOMESTAY</span>
+            <span className="eyebrow">Suka Room&Homestay</span>
             <h1>{t("login")}</h1>
             <p>{t("adminLoginDesc")}</p>
             <ErrorNotice code={error} />
@@ -215,7 +215,7 @@ export default function Admin() {
       </aside>
       <div className="admin-main">
         <header className="admin-top">
-          <span>SUKA HOMESTAY / {t(tab)}</span>
+          <span>Suka Room&Homestay / {t(tab)}</span>
           <LanguageSwitch />
         </header>
         <div className="admin-content">

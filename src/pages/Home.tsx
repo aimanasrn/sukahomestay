@@ -45,7 +45,7 @@ export default function Home() {
         <img
           className="hero-image"
           src={heroSrc}
-          alt={heroSrc.startsWith("/images/") ? t("photo") : "SUKA HOMESTAY"}
+          alt={heroSrc.startsWith("/images/") ? t("photo") : "Suka Room&Homestay"}
           onError={() => setHeroFailed(true)}
           fetchPriority="high"
         />
@@ -244,7 +244,7 @@ export default function Home() {
       <section id="location" className="section location-section">
         <div className="location-illustration">
           <MapPin size={46} strokeWidth={1} />
-          <h3>SUKA HOMESTAY</h3>
+          <h3>Suka Room&Homestay</h3>
           <p>{catalog.settings.address || t("missing")}</p>
           {catalog.settings.map_url &&
             /^https:\/\//.test(catalog.settings.map_url) && (

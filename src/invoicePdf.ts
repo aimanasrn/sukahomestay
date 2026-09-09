@@ -168,8 +168,8 @@ export function invoiceDocument(
     },
     {
       text: label(
-        "Terima kasih kerana memilih SUKA HOMESTAY.",
-        "Thank you for choosing SUKA HOMESTAY.",
+        "Terima kasih kerana memilih Suka Room&Homestay.",
+        "Thank you for choosing Suka Room&Homestay.",
       ),
       margin: [0, 14, 0, 0],
       color: "#C44F00",
@@ -188,11 +188,11 @@ export function invoiceDocument(
     content,
     info: {
       title: `${title} ${invoice.invoice_number}`,
-      author: "SUKA HOMESTAY",
+      author: "Suka Room&Homestay",
       subject: s.booking_reference,
     },
     footer: (page, count) => ({
-      text: `SUKA HOMESTAY | ${invoice.invoice_number} | ${page} / ${count}`,
+      text: `Suka Room&Homestay | ${invoice.invoice_number} | ${page} / ${count}`,
       alignment: "center",
       fontSize: 8,
       color: "#667085",

@@ -55,7 +55,7 @@ export function demoInvoice(
       net_paid_sen: b.paid_sen,
       balance_sen: b.quote.total_sen - b.paid_sen,
       seller: {
-        name: "SUKA HOMESTAY",
+        name: "Suka Room&Homestay",
         address: settings.address,
         email: settings.contact_email,
         phone: settings.whatsapp,

@@ -106,7 +106,7 @@ export default function Stay() {
       </Link>
       <div className="detail-heading">
         <div>
-          <span className="eyebrow">SUKA HOMESTAY</span>
+          <span className="eyebrow">Suka Room&Homestay</span>
           <h1>{names[a.id][lang]}</h1>
           <Counts bedrooms={a.bedrooms} bathrooms={a.bathrooms} />
         </div>

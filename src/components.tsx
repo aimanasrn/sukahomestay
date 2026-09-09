@@ -36,7 +36,7 @@ import {
 import { imageFor } from "./data";
 export function Logo() {
   return (
-    <Link to="/" className="logo" aria-label="SUKA HOMESTAY">
+    <Link to="/" className="logo" aria-label="Suka Room&Homestay">
       <img
         className="brand-logo"
         src="/sukamainlogo.png"
@@ -45,7 +45,7 @@ export function Logo() {
         height="60"
       />
       <span>
-        SUKA <span>HOMESTAY</span>
+        Suka <span>Room&amp;Homestay</span>
       </span>
     </Link>
   );
@@ -703,7 +703,7 @@ export function ScrollManager() {
           : location.pathname === "/book"
             ? t("planTitle")
             : [t("hero1"), t("hero2"), t("hero3")].join(" ");
-    document.title = `${title} | SUKA HOMESTAY`;
+    document.title = `${title} | Suka Room&Homestay`;
     document
       .querySelector('meta[name="description"]')
       ?.setAttribute("content", t("heroDesc"));
