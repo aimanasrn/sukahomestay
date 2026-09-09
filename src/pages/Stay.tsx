@@ -10,6 +10,7 @@ import {
   Notice,
   PriceSummary,
   ErrorNotice,
+  Modal,
 } from "../components";
 import {
   money,
@@ -26,6 +27,7 @@ export default function Stay() {
   const a = catalog.accommodations.find((a) => a.id === id);
   const [quote, setQuote] = useState<Quote | null>(null);
   const [error, setError] = useState("");
+  const [galleryIndex, setGalleryIndex] = useState<number | null>(null);
   useEffect(() => {
     if (a) setDraft({ resources: selectedResources(a.id) });
   }, [id]);
@@ -61,6 +63,43 @@ export default function Stay() {
     );
   return (
     <div className="section detail-page">
+      {galleryIndex !== null && (
+        <Modal
+          label={`${t("gallery")} - ${names[a.id][lang]}`}
+          onClose={() => setGalleryIndex(null)}
+        >
+          <Photo
+            accommodation={a}
+            src={a.photos[galleryIndex]}
+            className="lightbox-photo stay-lightbox"
+          />
+          <div className="stay-gallery-controls">
+            <button
+              type="button"
+              className="button outline"
+              disabled={galleryIndex === 0}
+              onClick={() => setGalleryIndex((n) => Math.max(0, (n || 0) - 1))}
+            >
+              {t("previousPhoto")}
+            </button>
+            <span aria-live="polite">
+              {galleryIndex + 1} / {Math.max(a.photos.length, 1)}
+            </span>
+            <button
+              type="button"
+              className="button outline"
+              disabled={galleryIndex >= a.photos.length - 1}
+              onClick={() =>
+                setGalleryIndex((n) =>
+                  Math.min(a.photos.length - 1, (n || 0) + 1),
+                )
+              }
+            >
+              {t("nextPhoto")}
+            </button>
+          </div>
+        </Modal>
+      )}
       <Link className="text-link" to="/#stays">
         <ArrowLeft size={17} />
         {t("stays")}
@@ -77,11 +116,26 @@ export default function Stay() {
           <span>/ {t("night")}</span>
         </div>
       </div>
-      <Photo accommodation={a} className="detail-hero" />
+      <button
+        type="button"
+        className="detail-hero-button"
+        aria-label={t("viewPhoto")}
+        onClick={() => setGalleryIndex(0)}
+      >
+        <Photo accommodation={a} className="detail-hero" />
+      </button>
       {a.photos.length > 1 && (
         <div className="detail-photo-rail">
-          {a.photos.slice(1).map((src) => (
-            <Photo key={src} src={src} />
+          {a.photos.slice(1).map((src, index) => (
+            <button
+              type="button"
+              className="detail-photo-thumb"
+              key={src}
+              aria-label={`${t("viewPhoto")} ${index + 2} / ${a.photos.length}`}
+              onClick={() => setGalleryIndex(index + 1)}
+            >
+              <Photo src={src} />
+            </button>
           ))}
         </div>
       )}

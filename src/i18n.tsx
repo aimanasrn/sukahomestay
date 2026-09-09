@@ -7,6 +7,9 @@ import {
 } from "react";
 import type { Lang } from "./domain";
 const en = {
+  viewPhoto: "View photo",
+  previousPhoto: "Previous photo",
+  nextPhoto: "Next photo",
   paymentInvoices: "Payment invoices",
   invoiceSendHelp:
     "Prepare the PDF, then download and attach it to WhatsApp or email. Supported devices also offer Share PDF.",
@@ -345,6 +348,9 @@ const en = {
 type Key = keyof typeof en;
 const ms: Record<Key, string> = {
   ...en,
+  viewPhoto: "Lihat foto",
+  previousPhoto: "Foto sebelumnya",
+  nextPhoto: "Foto seterusnya",
   paymentInvoices: "Invois bayaran",
   invoiceSendHelp:
     "Sediakan PDF, kemudian muat turun dan lampirkan pada WhatsApp atau e-mel. Peranti yang menyokongnya juga menawarkan Kongsi PDF.",

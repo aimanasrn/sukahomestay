@@ -3610,6 +3610,20 @@ button:disabled {
 .hero-image {
   mask-image: linear-gradient(90deg, transparent 20%, #000 65%);
 }
+@media (min-width: 851px) {
+  .hero-image {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 65%;
+    height: 100%;
+    object-position: center center;
+    mask-image: linear-gradient(90deg, transparent, #000 25%);
+  }
+  .hero-shade {
+    background: linear-gradient(90deg, #fff 30%, rgb(255 255 255 / 92%) 40%, transparent 64%);
+  }
+}
 .hero-content,
 .hero h1 {
   color: var(--text-heading);
@@ -4200,4 +4214,54 @@ footer a:hover {
 }
 .invoice-row .button {
   min-height: 44px;
+}
+
+/* Property galleries keep original photographs readable at every screen size. */
+.detail-hero-button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: inherit;
+  border-radius: 9px;
+  cursor: zoom-in;
+}
+.detail-photo-rail {
+  overflow-x: auto;
+  padding: 3px 3px 12px;
+  height: 170px;
+  scroll-snap-type: x proximity;
+}
+.detail-photo-thumb {
+  flex: 0 0 150px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: zoom-in;
+  background: var(--background-subtle);
+  scroll-snap-align: start;
+}
+.stay-lightbox img {
+  object-fit: contain;
+}
+.stay-gallery-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+.stay-gallery-controls .button {
+  padding: 10px 14px;
+  min-height: 44px;
+}
+@media (max-width: 600px) {
+  .detail-photo-thumb {
+    flex-basis: 125px;
+  }
+  .stay-gallery-controls .button {
+    font-size: 11px;
+  }
 }

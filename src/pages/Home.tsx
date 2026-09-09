@@ -30,8 +30,7 @@ export default function Home() {
   const [heroFailed, setHeroFailed] = useState(false);
   const heroSrc = heroFailed
     ? "/images/courtyard.webp"
-    : catalog.accommodations.find((a) => a.id === "WHOLE")?.photos[0] ||
-      "/images/courtyard.webp";
+    : "/herosectionimage.png";
   const actualGallery = [
     ...new Set(catalog.accommodations.flatMap((a) => a.photos)),
   ];
